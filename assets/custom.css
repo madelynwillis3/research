@@ -1,2 +1,6 @@
 include:
   - assets/custom.css
+.header {
+  min-height: 70px !important;
+  padding: 1.2rem 0 !important;
+}
