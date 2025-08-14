@@ -1,4 +1,14 @@
 .header {
-  min-height: 70px !important;
-  padding: 1.2rem 0 !important;
+  min-height: 60px !important;
+  background: #f7f7f7 !important;
+  padding: 1rem 0 !important;
+  font-family: 'Georgia', serif !important;
+}
+.header .project-name {
+  color: #37a000 !important;
+  font-size: 2rem !important;
+}
+.header .project-tagline {
+  color: #666 !important;
+  font-size: 1rem !important;
 }
