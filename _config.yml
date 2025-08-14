@@ -2,4 +2,4 @@ theme: jekyll-theme-cayman
 title: Digital Soil Mapping in Agriculture
 
 include:
-  - assets/custom.css
+  - assets/custom.css 
