@@ -1,2 +1,2 @@
-# mwillis.github.io
+# Madelyn Willis Research
 Repository for hosting all of my publishable research.
