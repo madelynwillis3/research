@@ -2,7 +2,6 @@
 <html lang="{{ site.lang | default: "en-US" }}">
   <head>
     <meta charset="UTF-8">
-
     {% seo %}
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
@@ -11,13 +10,37 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
     {% include head-custom.html %}
+    <style>
+      .page-header {
+        text-align: center;
+      }
+      .project-name {
+        font-size: 2rem; /* Smaller title */
+        color: #fff;
+        margin-bottom: 0.5em;
+      }
+      .project-nav {
+        margin-bottom: 1em;
+      }
+      .project-nav a {
+        font-size: 1.5rem;      /* Larger links */
+        color: #fff !important; /* White font */
+        text-decoration: none;
+        margin: 0 1.5em;        /* Spaced out links */
+        display: inline-block;
+        transition: color 0.2s;
+      }
+      .project-nav a:hover {
+        color: #ffd700;         /* Gold on hover, optional */
+      }
+    </style>
   </head>
   <body>
     <a id="skip-to-content" href="#content">Skip to the content.</a>
 
-    <header class="page-header" role="banner" style="text-align:center;">
-      <h1 class="project-name" style="margin-bottom:0.5em;">Digital Soil Mapping in Agriculture</h1>
-      <nav class="project-nav" style="margin-bottom:1em;">
+    <header class="page-header" role="banner">
+      <h1 class="project-name">Digital Soil Mapping in Agriculture</h1>
+      <nav class="project-nav">
         <a href="{{ '/' | relative_url }}">Home</a>
         <a href="{{ '/about/' | relative_url }}">About</a>
         <a href="{{ '/projects/' | relative_url }}">Projects</a>
