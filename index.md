@@ -1,7 +1,3 @@
----
-title: Digital Soil Mapping in Agriculture
----
-
 <!-- Navigation bar -->
 <nav style="display:flex; gap:1.5rem; justify-content:center; margin-bottom: 2rem;">
   <a href="/" style="text-decoration:none; color:#37a000; font-weight:bold;">Home</a>
