@@ -18,41 +18,40 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
+<!-- PapaParse for CSV parsing -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 <script>
-  // Sample points array
-  const points = [
-    {
-      lat: 40.71,
-      lng: -74.00,
-      name: "New York",
-      img_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/New_york_times_square-terabass.jpg/320px-New_york_times_square-terabass.jpg",
-      desc: "Urban soil sampling site."
-    },
-    {
-      lat: 34.05,
-      lng: -118.24,
-      name: "Los Angeles",
-      img_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Los_Angeles_at_night.jpg/320px-Los_Angeles_at_night.jpg",
-      desc: "Coastal soil study area."
-    }
-  ];
+  // Initialize map with a suitable center and zoom for Perry, GA
+  var map = L.map('map').setView([32.44, -83.73], 14);
 
-  // Initialize map
-  var map = L.map('map').setView([37, -95], 4);
-
-  // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: 'Map data © OpenStreetMap contributors'
   }).addTo(map);
 
-  // Add markers
-  points.forEach(function(pt) {
-    L.marker([pt.lat, pt.lng])
-      .addTo(map)
-      .bindPopup(
-        `<b>${pt.name}</b><br>
-         <img src="${pt.img_url}" style="width:150px;"><br>
-         ${pt.desc}`
-      );
+  // Load CSV data
+  Papa.parse('{{ "/soil_points_corrected.csv" | relative_url }}', {
+    download: true,
+    header: true,
+    complete: function(results) {
+      results.data.forEach(function(row) {
+        // Only add marker if lat/lng are present
+        if(row.y && row.x) {
+          // Customize popup: Show PointLabel and (optional) an image if available
+          var popupContent = `<b>Point ${row.PointLabel || row.Label}</b><br>
+                              <b>pH:</b> ${row.pH.2 || ""}<br>
+                              <b>Ca:</b> ${row.Ca || ""}<br>
+                              <b>K:</b> ${row.K || ""}<br>
+                              <b>Mg:</b> ${row.Mg || ""}<br>
+                              <b>P:</b> ${row.P || ""}`;
+          // If you have an image field, add here:
+          // popupContent += `<br><img src="${row.img_url}" style="width:150px;">`;
+
+          L.marker([parseFloat(row.y), parseFloat(row.x)])
+            .addTo(map)
+            .bindPopup(popupContent);
+        }
+      });
+    }
   });
 </script>
