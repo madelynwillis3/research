@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Interactive Soil Sampling Map
-permalink: /map/
+permalink: /coastalplain/
 ---
 
 # Digital Soil Mapping Points
