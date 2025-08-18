@@ -6,11 +6,11 @@ permalink: /coastalplain/
 
 # Digital Soil Mapping Points
 
-This interactive map shows field data points. Hover over each marker to see an image and description.
+This interactive map shows field data points on UGA GrandFarm in Perry, GA. Hover over each marker to see the soil profile at that point.
 
 <div id="map" style="height: 400px; margin-bottom: 2em;"></div>
 
-After the map, you can add more information about your sampling or research here.
+This sampling campaign took place from May 2023 to May 2025 in Perry GA. This site is situated in the northern coastal plains, where the sandy foothills lie only  During this time, 76 soil profiles were extracted and analyzed for texture, color, horizon, depth, structure, and other identifying notes.
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
