@@ -12,49 +12,44 @@
     {% include head-custom.html %}
     <style>
       .page-header {
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: inherit;
+        padding: 0.5em 2em;
+        min-height: 56px;
       }
       .project-name {
-        font-size: 2rem; /* Smaller title */
+        font-size: 1.2rem; /* Smaller title */
         color: #fff;
-        margin-bottom: 0.5em;
+        margin: 0;
+        font-weight: 700;
+        letter-spacing: 0.03em;
       }
       .project-nav {
-        margin-bottom: 1em;
+        margin: 0;
       }
       .project-nav a {
-        font-size: 1.5rem;      /* Larger links */
-        color: #fff !important; /* White font */
-        text-decoration: none;
-        margin: 0 1.5em;        /* Spaced out links */
-        display: inline-block;
-        transition: color 0.2s;
-      }
-      .project-nav a:hover {
-        color: #ffd700;         /* Gold on hover, optional */
-      }
-    <style>
-      .page-header {
-        text-align: center;
-      }
-      .project-name {
-        font-size: 2rem; /* Smaller title */
-        color: #fff;
-        margin-bottom: 0.5em;
-      }
-      .project-nav {
-        margin-bottom: 1em;
-      }
-      .project-nav a {
-        font-size: 1.5rem;
+        font-size: 1.15rem;
         color: #fff !important;
-        text-decoration: underline; /* Underline links */
-        margin: 0 1.5em;
+        text-decoration: underline;
+        margin: 0 1em;
         display: inline-block;
         transition: color 0.2s;
       }
       .project-nav a:hover {
         color: #ffd700;
+      }
+      @media (max-width: 600px) {
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+          min-height: unset;
+          padding: 0.5em 1em;
+        }
+        .project-nav {
+          margin-top: 0.5em;
+        }
       }
     </style>
   </head>
