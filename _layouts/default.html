@@ -15,19 +15,22 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: inherit;
+        background: #157878; /* Cayman default */
         padding: 0.5em 2em;
-        min-height: 56px;
+        min-height: 48px;
+        margin-bottom: 2em;
       }
       .project-name {
-        font-size: 1.2rem; /* Smaller title */
+        font-size: 1.2rem;
         color: #fff;
         margin: 0;
         font-weight: 700;
         letter-spacing: 0.03em;
+        white-space: nowrap;
       }
       .project-nav {
         margin: 0;
+        white-space: nowrap;
       }
       .project-nav a {
         font-size: 1.15rem;
@@ -40,11 +43,10 @@
       .project-nav a:hover {
         color: #ffd700;
       }
-      @media (max-width: 600px) {
+      @media (max-width: 700px) {
         .page-header {
           flex-direction: column;
           align-items: flex-start;
-          min-height: unset;
           padding: 0.5em 1em;
         }
         .project-nav {
