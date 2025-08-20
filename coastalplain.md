@@ -30,7 +30,7 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
   }).addTo(map);
 
   // Load CSV data
-  Papa.parse('{{ "/soil_points_corrected.csv" | relative_url }}', {
+  Papa.parse('{{ "/data/soil_points_corrected.csv" | relative_url }}', {
     download: true,
     header: true,
     complete: function(results) {
