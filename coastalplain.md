@@ -29,7 +29,7 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 }).addTo(map);
 
 // Base folder for images
-var imgBase = '{{ "/assets/images/soil_profiles/" | relative_url }}';
+var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
 
 Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
   download: true,
