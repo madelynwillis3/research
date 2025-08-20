@@ -6,10 +6,10 @@ permalink: /projects/
 
 # Projects
 
-Explore the projects related to Digital Soil Mapping in Agriculture.
+View current and former projects below:
 
 ## Coastal Plain Interactive Map
 
-See our interactive map of coastal plain sampling sites:
+See the interactive map of coastal plain agricultural sampling sites:
 [View Coastal Plain Map]({{ '/coastalplain/' | relative_url }})
 
