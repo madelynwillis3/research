@@ -23,25 +23,30 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
 
 <script>
 var map = L.map('map').setView([32.4307, -83.7338], 15);
+// ESRI World Imagery (Satellite)
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
 }).addTo(map);
+
+// Base folder for images
+var imgBase = '{{ "/assets/images/soil_profiles/" | relative_url }}';
 
 Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
   download: true,
   header: true,
   complete: function(results) {
     results.data.forEach(function(row) {
-      // Make sure x, y, and Point ID exist and are numbers
       if(row.x && row.y && row["Point ID"]) {
         var lat = parseFloat(row.y);
         var lng = parseFloat(row.x);
         var label = row["Point ID"];
-        // Only add marker if coordinates are valid
         if (!isNaN(lat) && !isNaN(lng)) {
           L.marker([lat, lng])
             .addTo(map)
-            .bindPopup(`<b>Sample ${label}</b>`);
+            .bindPopup(
+              `<b>Sample ${label}</b><br>
+               <img src="${imgBase}${label}.jpg" style="width:150px;max-height:150px;">`
+            );
         }
       }
     });
