@@ -4,7 +4,7 @@ title: Interactive Soil Sampling Map
 permalink: /coastalplain/
 ---
 
-# Digital Soil Mapping Points
+# Mapping Soil Profiles on UGAGrandFarm
 
 This interactive map shows field data points on UGA GrandFarm in Perry, GA. Hover over each marker to see the soil profile at that point.
 
