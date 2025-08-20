@@ -22,23 +22,27 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-var map = L.map('map').setView([32.4379, -83.7362], 15);
+var map = L.map('map').setView([32.4307, -83.7338], 15);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: 'Map data © OpenStreetMap contributors'
 }).addTo(map);
 
-Papa.parse('{{ "/assets/data/soil_points_corrected.csv" | relative_url }}', {
+Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
   download: true,
   header: true,
   complete: function(results) {
     results.data.forEach(function(row) {
-      if(row.x && row.y) {
-        L.marker([parseFloat(row.y), parseFloat(row.x)]).addTo(map)
-          .bindPopup(`<b>${row.PointLabel || row.Label || "Sample"}</b><br>
-                      <b>pH:</b> ${row.pH.2 || ""}<br>
-                      <b>Ca:</b> ${row.Ca || ""}<br>
-                      <b>K:</b> ${row.K || ""}<br>
-                      <b>P:</b> ${row.P || ""}`);
+      // Make sure x, y, and Point ID exist and are numbers
+      if(row.x && row.y && row["Point ID"]) {
+        var lat = parseFloat(row.y);
+        var lng = parseFloat(row.x);
+        var label = row["Point ID"];
+        // Only add marker if coordinates are valid
+        if (!isNaN(lat) && !isNaN(lng)) {
+          L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup(`<b>Sample ${label}</b>`);
+        }
       }
     });
   }
