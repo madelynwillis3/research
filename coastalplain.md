@@ -23,8 +23,8 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
 
 <script>
 var map = L.map('map').setView([32.4307, -83.7338], 15);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: 'Map data © OpenStreetMap contributors'
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles © Esri'
 }).addTo(map);
 
 Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
