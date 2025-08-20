@@ -10,7 +10,7 @@ This interactive map shows field data points on UGA GrandFarm in Perry, GA. Hove
 
 <div id="map" style="height: 400px; margin-bottom: 2em;"></div>
 
-This sampling campaign took place from May 2023 to May 2025 in Perry GA. This site is situated in the northern coastal plains, where the sandy foothills lie only  During this time, 76 soil profiles were extracted and analyzed for texture, color, horizon, depth, structure, and other identifying notes.
+This sampling campaign took place from May 2023 to May 2025 in Perry GA. This site is situated in the northern coastal plains, where the fall line lies only 30 miles north. During the sample campaign, 76 soil profiles were extracted and analyzed for texture, color, horizon, depth, structure, and other identifying notes.
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
