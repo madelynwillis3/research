@@ -22,36 +22,25 @@ This sampling campaign took place from May 2023 to May 2025 in Perry GA. This si
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-  // Initialize map with a suitable center and zoom for Perry, GA
-  var map = L.map('map').setView([32.44, -83.73], 14);
+var map = L.map('map').setView([32.4379, -83.7362], 15);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: 'Map data © OpenStreetMap contributors'
+}).addTo(map);
 
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: 'Map data © OpenStreetMap contributors'
-  }).addTo(map);
-
-  // Load CSV data
-  Papa.parse('{{ "/data/soil_points_corrected.csv" | relative_url }}', {
-    download: true,
-    header: true,
-    complete: function(results) {
-      results.data.forEach(function(row) {
-        // Only add marker if lat/lng are present
-        if(row.y && row.x) {
-          // Customize popup: Show PointLabel and (optional) an image if available
-          var popupContent = `<b>Point ${row.PointLabel || row.Label}</b><br>
-                              <b>pH:</b> ${row.pH.2 || ""}<br>
-                              <b>Ca:</b> ${row.Ca || ""}<br>
-                              <b>K:</b> ${row.K || ""}<br>
-                              <b>Mg:</b> ${row.Mg || ""}<br>
-                              <b>P:</b> ${row.P || ""}`;
-          // If you have an image field, add here:
-          // popupContent += `<br><img src="${row.img_url}" style="width:150px;">`;
-
-          L.marker([parseFloat(row.y), parseFloat(row.x)])
-            .addTo(map)
-            .bindPopup(popupContent);
-        }
-      });
-    }
-  });
+Papa.parse('{{ "/assets/data/soil_points_corrected.csv" | relative_url }}', {
+  download: true,
+  header: true,
+  complete: function(results) {
+    results.data.forEach(function(row) {
+      if(row.x && row.y) {
+        L.marker([parseFloat(row.y), parseFloat(row.x)]).addTo(map)
+          .bindPopup(`<b>${row.PointLabel || row.Label || "Sample"}</b><br>
+                      <b>pH:</b> ${row.pH.2 || ""}<br>
+                      <b>Ca:</b> ${row.Ca || ""}<br>
+                      <b>K:</b> ${row.K || ""}<br>
+                      <b>P:</b> ${row.P || ""}`);
+      }
+    });
+  }
+});
 </script>
