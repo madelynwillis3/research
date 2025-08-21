@@ -22,7 +22,7 @@ This interactive map shows field data points on UGA GrandFarm in Perry, GA. Hove
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-var map = L.map('map').setView([32.432, -83.740], 15);
+var map = L.map('map').setView([32.430719, -83.733385], 15);
 // ESRI World Imagery (Satellite)
 L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles © Esri'
