@@ -30,7 +30,9 @@ L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/
 
 // Base folder for images
 var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
-
+// List of non-sampled points:
+const exclude = ["39", "50", "51", "58", "60", "65", "74"];
+ 
 Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
   download: true,
   header: true,
@@ -39,7 +41,8 @@ Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
       if(row.x && row.y && row["Point ID"]) {
         var lat = parseFloat(row.y);
         var lng = parseFloat(row.x);
-        var label = row["Point ID"];
+        var label = row["Point ID"].trim();
+        if (exclude.includes(label)) return; // skip excluded points
         if (!isNaN(lat) && !isNaN(lng)) {
           L.circleMarker([lat, lng], {
             radius: 6,
