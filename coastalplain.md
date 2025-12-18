@@ -68,8 +68,15 @@ Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
 
     // Center map AFTER markers load
     if (sample45LatLng) {
-      map.setView(sample45LatLng, 16);  // ← zoom tuned for pedon scale
-    }
+  setTimeout(() => {
+    map.flyTo(sample45LatLng, 15, {
+      animate: true,
+      duration: 2,
+      easeLinearity: 0.25
+    });
+  }, 400);
+}
+
   }
 });
 </script>
