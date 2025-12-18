@@ -74,7 +74,7 @@ Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
     // 3) After the fly finishes, “rain in” markers
     //    Staggered add + fade-in by increasing fillOpacity
     setTimeout(() => {
-      const delayMs = 35; // smaller = faster animation, larger = slower
+      const delayMs = 20; // smaller = faster animation, larger = slower
 
       markers.forEach((m, i) => {
         setTimeout(() => {
