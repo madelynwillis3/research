@@ -5,6 +5,9 @@ permalink: /about/
 ---
 
 
-### Links: 
+### Links:
+- [LinkedIn](www.linkedin.com/in/madelyn-willis-36a466158)
+- [My Lab Page](https://pedology.uga.edu/)
 
-### CV: 
+### CV:
+- [Curriculum Vitae](cv.md)
