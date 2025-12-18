@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: "Soil Taxonomy"
 permalink: /masters-research/soil-taxonomy/
 ---
