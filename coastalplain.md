@@ -46,18 +46,23 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     height: auto;
     border-radius: 12px;
     cursor: zoom-in;
+    object-fit: contain;
   }
 
   /* Leaflet popup polish */
   .leaflet-popup-content { margin: 10px 12px; }
+
+  /* Popup image: preserve aspect ratio (no stretching) */
   .popup-img {
     width: 160px;
-    max-height: 160px;
+    max-width: 100%;
     height: auto;
+    max-height: 180px;
     border-radius: 10px;
     cursor: zoom-in;
     display: block;
     margin-top: 6px;
+    object-fit: contain;
   }
 
   /* Modal (scrollable + constrained height) */
@@ -81,6 +86,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     width: 100%;
     height: auto;
     border-radius: 12px;
+    object-fit: contain;
   }
   #imgModal .caption {
     margin: 10px 6px 0;
@@ -166,7 +172,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   }
 
   // ---------- CSV parse + animated marker drop ----------
-  let targetLatLng = null; // used just to pick a reasonable fly-to center
+  let targetLatLng = null;
 
   Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
     download: true,
@@ -194,9 +200,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
           <img src="${imgSrc}" class="popup-img"
                alt="Profile image for Sample ${label}"
                onclick="openModal('${imgSrc}', 'Sample ${label}')">
-          <div style="margin-top:6px; font-size:0.9rem; opacity:0.85;">
-            Click the point to load details in the side panel.
-          </div>
         `;
 
         const marker = L.circleMarker([lat, lng], {
