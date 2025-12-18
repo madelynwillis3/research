@@ -6,7 +6,7 @@ permalink: /coastalplain/
 
 # Mapping Soil Profiles on UGAGrandFarm
 
-This interactive map shows field data points on UGA GrandFarm in Perry, GA. Click a point to load the sample’s details in the side panel. Click the image to view it larger and scroll.
+This interactive map shows field data points on UGA GrandFarm in Perry, GA. Click a point to view a quick popup on the map and load the sample’s details in the side panel. Click the image to enlarge and scroll.
 
 This site is situated in the northern Coastal Plain, where 75 soil profiles were extracted and analyzed for texture, color, horizon, depth, structure, and other identifying notes.
 
@@ -46,6 +46,18 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     height: auto;
     border-radius: 12px;
     cursor: zoom-in;
+  }
+
+  /* Leaflet popup polish */
+  .leaflet-popup-content { margin: 10px 12px; }
+  .popup-img {
+    width: 160px;
+    max-height: 160px;
+    height: auto;
+    border-radius: 10px;
+    cursor: zoom-in;
+    display: block;
+    margin-top: 6px;
   }
 
   /* Modal (scrollable + constrained height) */
@@ -88,7 +100,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   <div id="infoPanel" aria-live="polite">
     <h3>Sample details</h3>
     <p class="muted">Click a sample point to view details here.</p>
-    <p class="muted">Tip: click the photo to enlarge. Scroll to view the full profile.</p>
+    <p class="muted">Tip: click any photo (popup or panel) to enlarge. Scroll to view the full profile.</p>
   </div>
 </div>
 
@@ -139,6 +151,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   imgModal.addEventListener("click", (e) => { if (e.target === imgModal) closeModalFn(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModalFn(); });
 
+  // allow inline onclick in popup HTML + panel HTML
   window.openModal = openModal;
 
   function setPanelContent(label, lat, lng, imgSrc) {
@@ -153,7 +166,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   }
 
   // ---------- CSV parse + animated marker drop ----------
-  let targetLatLng = null;
+  let targetLatLng = null; // used just to pick a reasonable fly-to center
 
   Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
     download: true,
@@ -176,6 +189,16 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         const imgSrc = `${imgBase}${label}.jpg`;
 
+        const popupHTML = `
+          <b>Sample ${label}</b><br>
+          <img src="${imgSrc}" class="popup-img"
+               alt="Profile image for Sample ${label}"
+               onclick="openModal('${imgSrc}', 'Sample ${label}')">
+          <div style="margin-top:6px; font-size:0.9rem; opacity:0.85;">
+            Click the point to load details in the side panel.
+          </div>
+        `;
+
         const marker = L.circleMarker([lat, lng], {
           radius: 6,
           color: "#007BFF",
@@ -183,14 +206,18 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
           fillOpacity: 0.0
         });
 
+        marker.bindPopup(popupHTML);
+
+        // Click updates side panel AND opens the small map popup
         marker.on("click", () => {
           setPanelContent(label, lat, lng, imgSrc);
+          marker.openPopup();
         });
 
         markers.push(marker);
       });
 
-      // Smooth animated fly-in
+      // Smooth animated fly-in (slightly zoomed out)
       const target = targetLatLng || [32.43, -83.73];
       map.flyTo(target, 15, { animate: true, duration: 1.6 });
 
