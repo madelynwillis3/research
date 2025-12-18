@@ -1,8 +1,9 @@
 ---
-layout: default
-title: Interactive Soil Sampling Map
+layout: page
+title: "Coastal Plain Interactive Map"
 permalink: /coastalplain/
 ---
+
 
 # Mapping Soil Profiles on UGAGrandFarm
 
