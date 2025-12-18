@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: "Coastal Plain Interactive Map"
 permalink: /coastalplain/
 ---
