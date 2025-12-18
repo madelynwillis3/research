@@ -7,9 +7,10 @@ permalink: /projects/
 # Projects
 
 View current and former projects below:
+## Masters Research
+- [Soil Taxonomy]({{ site.baseurl }}/masters-research/soil-taxonomy/)
+- [Soil Sampling (Single Point vs Composite)]({{ site.baseurl }}/masters-research/soil-sampling/)
+- [Soil Management Zone Prediction]({{ site.baseurl }}/masters-research/soil-management-zones/)
+- [Linking Soil Properties to Weed Occurrences]({{ site.baseurl }}/masters-research/weed-occurrence/)
 
-## Coastal Plain Interactive Map
-
-See the interactive map of coastal plain agricultural sampling sites:
-[View Coastal Plain Map]({{ '/coastalplain/' | relative_url }})
 
