@@ -10,4 +10,4 @@ permalink: /about/
 - [Pedology Lab Page](https://pedology.uga.edu/)
 
 ### CV:
-- [Curriculum Vitae](cv.md)
+-  [Curriculum Vitae](https://madelynwillis3.github.io/research/about/cv/).
