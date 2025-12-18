@@ -21,7 +21,7 @@ University of Georgia – Bachelor of Science in Environmental Science, Fall 202
 - Undergraduate Research Assistant, Remote Sensing Lab – University of Georgia - Fall 2023 to Spring 2024
   - Performed analytical and field work using R.S imagery and spatial data
 - Graduate Research Assistant, Pedology Lab - University of Georgia - Fall 2024 to present
-  - Conducting M.S. thesis research: digital soil mapping in the U.S. southern coastal plains
+  - Conducting M.S. thesis research: Digital Soil Mapping in the U.S. Southern Coastal Plain
 
 ## Teaching Positions
 - Teaching Assistant (CRSS 2010/2010L), Crop Science – July 2025 to present
@@ -61,3 +61,4 @@ University of Georgia – Bachelor of Science in Environmental Science, Fall 202
 ## Memberships in Associations
 - Soil Science Society of Georgia
 - Soil Science Society of America
+- International Association for Landscape Ecology
