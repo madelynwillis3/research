@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: default
 title: "Soil Sampling"
 permalink: /masters-research/soil-sampling/
 ---
