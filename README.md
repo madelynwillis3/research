@@ -4,6 +4,6 @@
     <p>
       Welcome! I am Madelyn Willis, an M.S. student in soil science at the University of Georgia. I focus on digital soil mapping and landscape-nutrient connections to further our understanding of agricultural soils for sustainability and productivity.
     </p>
-    <p> Email: [email@example.com](mailto:email@example.com).
+    <p>Email: <a href="mailto:Madelyn.Willis@uga.edu">Madelyn.Willis@uga.edu</a></p>
   </div>
 </div>
