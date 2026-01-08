@@ -6,7 +6,7 @@ permalink: /coastalplain/
 
 # Mapping Soil Profiles on UGAGrandFarm
 
-This interactive map displays pedon data within UGA GrandFarm in Perry, GA. Click a point to view a quick popup on the map and in the side panel. 
+This interactive map displays pedon data, such as horizon depth (cm) and color at UGA GrandFarm in Perry, GA. Click a point to view a pop-up of the soil profile on the map and in the side panel. 
 
 This site is situated in the northern Coastal Plain, where 75 soil profiles were extracted and analyzed for texture, color, horizon, depth, structure, and other identifying notes.
 
