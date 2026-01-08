@@ -13,4 +13,4 @@ Pedons are evaluated using both supervised taxonomic classification and unsuperv
 The link below contains an interactive map of soil pedons, allowing users to explore individual soil profiles in their spatial context:
 
 ## Coastal Plain Interactive Map
-[Interactive Map]({{ site.baseurl }}/coastalplain/)
+### [Interactive Map]({{ site.baseurl }}/coastalplain/)
