@@ -17,7 +17,7 @@ I am an M.Sc. graduate student exploring digital soil mapping, soil nutrient dis
 ---
 
 ### Projects
-Explore my work on geospatial modeling and soil science. My research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
+My current research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
 
 ---
 
