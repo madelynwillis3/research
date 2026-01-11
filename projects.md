@@ -13,4 +13,6 @@ View current and former projects below:
 - [Soil Management Zone Prediction]({{ site.baseurl }}/masters-research/soil-management-zones/)
 - [Linking Soil Properties to Weed Occurrences]({{ site.baseurl }}/masters-research/weed-occurrence/)
 
+## Undergraduate Research
+- [Understanding Effects of Trail Compaction and Soil Erosion on Old-Growth Tree Falls in the Southeast]({{ site.baseurl }}/undergraduate-research/driftmier-woods)
 
