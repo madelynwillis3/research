@@ -11,13 +11,13 @@
 
 ---
 
-### About Me
-Links, bio, and CV [here](/research/about/).
+### Projects
+My current research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
 
 ---
 
-### Projects
-My current research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
+### About Me
+Links, bio, and CV [here](/research/about/).
 
 ---
 
