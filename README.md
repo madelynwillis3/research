@@ -12,7 +12,7 @@
 ---
 
 ### About Me
-I am an M.Sc. graduate student exploring digital soil mapping, soil nutrient distribution, and sustainable land management practices. Learn more [here](/research/about/).
+Links, bio, and CV [here](/research/about/).
 
 ---
 
