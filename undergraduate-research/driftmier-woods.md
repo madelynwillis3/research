@@ -6,8 +6,11 @@ permalink: /undergraduate-research/driftmier-woods/
 
 # Understanding Effects of Trail Compaction and Soil Erosion on Old-Growth Tree Falls in the Southeast
 
-This project explored the impact of soil compaction and erosion resulting from trail use on the stability and health of old-growth trees in the Southeast, with a particular focus on Driftmier Woods. By analyzing soil characteristics and patterns of tree fall, recommendations for sustainable trail management practices were developed.
+This project explored the impact of soil compaction and erosion from rerouting hydrology and trail compaction on old-growth tree falls in Driftmier woods, a 10-acre old-growth forest siturated in UGA's campus. 
+
 
 ---
 
-If you have any project images, data visualizations, or reports to include, please provide their locations or links, and I can append them here!
+The principal objective of this project was to execute the digitization of old contour maps and produce congruent maps of Driftmier Woods. In tandem with this, research objectives included producing data and maps representing temporal topographical changes and acquiring spatial tree data to correlate these changes with the locations of felled trees. Areas of higher erosion over time were examined to determine whether they could be attributed to locations where large old-growth trees had fallen. The analysis also explored whether a decreasing degree of slope over time showed any correlation with tree falls and whether areas of little to no topographic change exhibited a lack of fallen trees. Additionally, an analysis was done where proximity to student-formed trails were assessed with correlation of old-growth tree falls in the forest, with the rationale being that soil compaction led to lower oxygen and nutrient availability for the trees. 
+
+
