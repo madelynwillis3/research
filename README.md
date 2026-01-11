@@ -22,4 +22,4 @@ Explore my work on geospatial modeling and soil science. My research projects fo
 ---
 
 ### News
-Check out the latest with my research [here](/news/).
+Check out the latest with my research [here](/research/news/).
