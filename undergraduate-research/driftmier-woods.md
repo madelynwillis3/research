@@ -18,13 +18,13 @@ The principal objective of this project was to execute the digitization of old c
 ## Figures
 
 ### Elevation Change Map
-<a href="/images/elev-driftmier.png" target="_blank">
+<a href="/images/elev driftmier.png" target="_blank">
   <img src="/images/elev driftmier.png" alt="Elevation Change Map of Driftmier Woods" style="max-width:100%; height:auto;">
 </a>
 <p style="text-align:center;">Figure 1: Elevation map depicting areas of significant change in Driftmier Woods over time.</p>
 
 ### Slope Change Map
-<a href="/images/slope-driftmier.png" target="_blank">
+<a href="/images/slope driftmier.png" target="_blank">
   <img src="/images/slope driftmier.png" alt="Slope Change Map of Driftmier Woods" style="max-width:100%; height:auto;">
 </a>
 <p style="text-align:center;">Figure 2: Slope variation map indicating regions where shifts have occurred, potentially impacting old-growth tree stability.</p>
