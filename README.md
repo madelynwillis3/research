@@ -13,7 +13,7 @@
 
 ### Projects
 My current research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
-
+I also have an interactive map of my soil taxonomy research that can be viewed [here](/research/coastalplain/).
 ---
 
 ### About Me
