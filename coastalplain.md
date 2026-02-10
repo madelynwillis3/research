@@ -98,6 +98,102 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     opacity: 0.75;
     margin-bottom: 6px;
   }
+
+  /* Image Carousel Styles */
+  .image-carousel {
+    position: relative;
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .carousel-images {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    cursor: zoom-in;
+    display: none;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+  }
+
+  .carousel-image.active {
+    display: block;
+  }
+
+  /* Popup-specific carousel image sizing */
+  .leaflet-popup .carousel-image {
+    max-width: 160px;
+    max-height: 180px;
+  }
+
+  /* Panel-specific carousel image sizing */
+  #infoPanel .carousel-image {
+    width: 100%;
+    max-height: none;
+  }
+
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    z-index: 10;
+    transition: background 0.2s ease;
+    line-height: 1;
+  }
+
+  .carousel-arrow:hover {
+    background: rgba(0, 0, 0, 0.75);
+  }
+
+  .carousel-arrow.left {
+    left: 8px;
+  }
+
+  .carousel-arrow.right {
+    right: 8px;
+  }
+
+  .carousel-dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+    z-index: 10;
+  }
+
+  .carousel-dots .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .carousel-dots .dot.active {
+    background: rgba(255, 255, 255, 0.95);
+    transform: scale(1.2);
+  }
+
+  .carousel-dots .dot:hover {
+    background: rgba(255, 255, 255, 0.75);
+  }
 </style>
 
 <div id="mapWrap">
@@ -160,13 +256,148 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   // allow inline onclick in popup HTML + panel HTML
   window.openModal = openModal;
 
+  // ---------- Carousel Navigation Functions ----------
+  
+  // Change image by direction (1 for next, -1 for previous)
+  function changeImage(event, label, direction, context) {
+    event.stopPropagation(); // Prevent popup close or other unwanted behaviors
+    
+    // Find the carousel container for this label and context
+    const carousel = document.querySelector(`.image-carousel[data-label="${label}"][data-context="${context}"]`);
+    if (!carousel) return;
+    
+    const images = carousel.querySelectorAll('.carousel-image');
+    const dots = carousel.querySelectorAll('.dot');
+    
+    // Find current active image
+    let currentIndex = -1;
+    images.forEach((img, idx) => {
+      if (img.classList.contains('active')) {
+        currentIndex = idx;
+      }
+    });
+    
+    // Calculate next index (wrap around)
+    let nextIndex = currentIndex + direction;
+    if (nextIndex < 0) nextIndex = images.length - 1;
+    if (nextIndex >= images.length) nextIndex = 0;
+    
+    // Update active classes
+    images.forEach((img, idx) => {
+      img.classList.toggle('active', idx === nextIndex);
+    });
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === nextIndex);
+    });
+  }
+  
+  // Jump directly to a specific image
+  function goToImage(event, label, index, context) {
+    event.stopPropagation();
+    
+    const carousel = document.querySelector(`.image-carousel[data-label="${label}"][data-context="${context}"]`);
+    if (!carousel) return;
+    
+    const images = carousel.querySelectorAll('.carousel-image');
+    const dots = carousel.querySelectorAll('.dot');
+    
+    // Update active classes
+    images.forEach((img, idx) => {
+      img.classList.toggle('active', idx === index);
+    });
+    dots.forEach((dot, idx) => {
+      dot.classList.toggle('active', idx === index);
+    });
+  }
+  
+  // Open modal with the currently displayed carousel image
+  function openModalFromCarousel(event, label, context) {
+    event.stopPropagation();
+    
+    const carousel = document.querySelector(`.image-carousel[data-label="${label}"][data-context="${context}"]`);
+    if (!carousel) return;
+    
+    const activeImage = carousel.querySelector('.carousel-image.active');
+    if (activeImage) {
+      openModal(activeImage.src, `Sample ${label}`);
+    }
+  }
+  
+  // Touch swipe support
+  let touchStartX = 0;
+  let touchEndX = 0;
+  const swipeThreshold = 50; // minimum distance for a swipe
+  
+  document.addEventListener('touchstart', (e) => {
+    const carousel = e.target.closest('.image-carousel');
+    if (carousel) {
+      touchStartX = e.changedTouches[0].screenX;
+    }
+  });
+  
+  document.addEventListener('touchend', (e) => {
+    const carousel = e.target.closest('.image-carousel');
+    if (carousel) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe(carousel);
+    }
+  });
+  
+  function handleSwipe(carousel) {
+    const swipeDistance = touchEndX - touchStartX;
+    if (Math.abs(swipeDistance) < swipeThreshold) return;
+    
+    const label = carousel.dataset.label;
+    const context = carousel.dataset.context;
+    const direction = swipeDistance > 0 ? -1 : 1; // swipe right = previous, swipe left = next
+    
+    // Create a synthetic event
+    const syntheticEvent = { stopPropagation: () => {} };
+    changeImage(syntheticEvent, label, direction, context);
+  }
+  
+  // Keyboard arrow key support for carousel
+  document.addEventListener('keydown', (e) => {
+    // Only handle arrow keys when not in an input field
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      // Find if there's an active carousel in the panel
+      const panelCarousel = document.querySelector('#infoPanel .image-carousel');
+      if (panelCarousel) {
+        const label = panelCarousel.dataset.label;
+        const context = panelCarousel.dataset.context;
+        const direction = e.key === 'ArrowLeft' ? -1 : 1;
+        const syntheticEvent = { stopPropagation: () => {} };
+        changeImage(syntheticEvent, label, direction, context);
+        e.preventDefault(); // Prevent default arrow key behavior
+      }
+    }
+  });
+  
+  // Make functions globally available
+  window.changeImage = changeImage;
+  window.goToImage = goToImage;
+  window.openModalFromCarousel = openModalFromCarousel;
+
   function setPanelContent(label, lat, lng, imgSrc) {
     panel.innerHTML = `
       <h3>Sample ${label}</h3>
       <p class="muted">Lat: ${lat.toFixed(6)} | Lon: ${lng.toFixed(6)}</p>
-      <img src="${imgSrc}" alt="Profile image for Sample ${label}" onclick="openModal('${imgSrc}', 'Sample ${label}')">
+      <div class="image-carousel" data-label="${label}" data-context="panel">
+        <div class="carousel-images">
+          <img src="${imgSrc}" class="carousel-image active" data-index="0" alt="Profile for Sample ${label}" onclick="openModalFromCarousel(event, '${label}', 'panel')">
+          <img src="https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_${label}.jpg" class="carousel-image" data-index="1" alt="Field photo for Sample ${label}" onclick="openModalFromCarousel(event, '${label}', 'panel')">
+        </div>
+        <button class="carousel-arrow left" onclick="changeImage(event, '${label}', -1, 'panel')">‹</button>
+        <button class="carousel-arrow right" onclick="changeImage(event, '${label}', 1, 'panel')">›</button>
+        <div class="carousel-dots">
+          <span class="dot active" onclick="goToImage(event, '${label}', 0, 'panel')"></span>
+          <span class="dot" onclick="goToImage(event, '${label}', 1, 'panel')"></span>
+        </div>
+      </div>
       <p class="muted" style="margin-top:10px;">
-        Tip: click the image to enlarge. Scroll to view the full profile.
+        Tip: click the image to enlarge. Use arrows to view multiple images.
       </p>
     `;
   }
@@ -197,9 +428,18 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         const popupHTML = `
           <b>Sample ${label}</b><br>
-          <img src="${imgSrc}" class="popup-img"
-               alt="Profile image for Sample ${label}"
-               onclick="openModal('${imgSrc}', 'Sample ${label}')">
+          <div class="image-carousel" data-label="${label}" data-context="popup">
+            <div class="carousel-images">
+              <img src="${imgSrc}" class="carousel-image active" data-index="0" alt="Profile for Sample ${label}" onclick="openModalFromCarousel(event, '${label}', 'popup')">
+              <img src="https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_${label}.jpg" class="carousel-image" data-index="1" alt="Field photo for Sample ${label}" onclick="openModalFromCarousel(event, '${label}', 'popup')">
+            </div>
+            <button class="carousel-arrow left" onclick="changeImage(event, '${label}', -1, 'popup')">‹</button>
+            <button class="carousel-arrow right" onclick="changeImage(event, '${label}', 1, 'popup')">›</button>
+            <div class="carousel-dots">
+              <span class="dot active" onclick="goToImage(event, '${label}', 0, 'popup')"></span>
+              <span class="dot" onclick="goToImage(event, '${label}', 1, 'popup')"></span>
+            </div>
+          </div>
         `;
 
         const marker = L.circleMarker([lat, lng], {
