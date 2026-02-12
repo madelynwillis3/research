@@ -276,7 +276,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
   var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
   const fieldPhotoBase = 'https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_';
-  const exclude = ["39", "50", "51", "58", "60", "65", "74"];
+  const exclude = ["39", "50", "51", "58", "59", "60", "65", "74"];
 
   // ---------- Side panel + modal ----------
   const panel = document.getElementById("infoPanel");
