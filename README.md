@@ -8,6 +8,10 @@
         <p>GitHub: <a href="https://github.com/madelynwillis3" target="_blank">madelynwillis3</a></p>
     </div>
 </div>
+---
+
+### Looking for PhD opportunity
+**I am expecting to finish my master's degree in late spring 2026, and am currently looking for PhD opportunities. Contact me at <a href='mailto:mrw78462@uga.edu'>mrw78462@uga.edu</a>, or <a href='mailto:madelyn.willis@gmail.com'>madelyn.willis@gmail.com</a>.**  
 
 ---
 
