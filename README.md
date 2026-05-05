@@ -10,11 +10,6 @@
 </div>
 ---
 
-### Looking for PhD opportunity
-**I am expecting to finish my master's degree in late spring 2026, and am currently looking for PhD opportunities. Contact me at <a href='mailto:mrw78462@uga.edu'>mrw78462@uga.edu</a>, or <a href='mailto:madelyn.willis@gmail.com'>madelyn.willis@gmail.com</a>.**  
-
----
-
 ### Projects
 My current research projects focus on soil taxonomy, soil sampling methodology, management zones and nutrient landscape connections, as well as weed-landscape-soil connections. Learn more about my projects [here](/research/projects/).
 
