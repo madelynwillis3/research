@@ -277,6 +277,11 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
   const fieldPhotoBase = 'https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_';
   const exclude = ["39", "50", "51", "58", "59", "60", "65", "74"];
+  const defaultMarkerStyle = {
+    color: "#000000",
+    weight: 1.5,
+    fillOpacity: 0.0
+  };
   const seriesByPoint = {
     "P2": "Thursa",
     "P3": "Faceville",
@@ -315,6 +320,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "32": "Norfolk",
     "33": "Norfolk",
     "34": "Johns",
+    "35": "Disturbed",
     "36": "Orangeburg",
     "37": "Faceville",
     "38": "Faceville",
@@ -327,6 +333,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "46": "Greenville",
     "47": "Faceville",
     "48": "Greenville",
+    "49": "Disturbed",
     "52": "Leefield",
     "53": "Orangeburg",
     "54": "Faceville",
@@ -344,12 +351,31 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "70": "Faceville",
     "71": "Greenville",
     "72": "Orangeburg",
+    "73": "Disturbed",
     "75": "Faceville",
     "76": "Orangeburg",
     "77": "Orangeburg",
     "78": "Lucy",
     "79": "Troup",
     "80": "Troup"
+  };
+  const seriesColors = {
+    "Faceville": "#d73027",
+    "Orangeburg": "#f28c28",
+    "Lucy": "#e76f51",
+    "Troup": "#f4a6a6",
+    "Greenville": "#8b0000",
+    "Leefield": "#d8c3a5",
+    "Blanton": "#8a7f73",
+    "Norfolk": "#d3d3d3",
+    "Dothan": "#d4a017",
+    "Johns": "#c2a878",
+    "Red Bay": "#5c0000",
+    "Benevolence": "#fa8072",
+    "Lakeland": "#d2a679",
+    "Wagram": "#d2a679",
+    "Bonneau": "#d3d3d3",
+    "Disturbed": "#808080"
   };
 
   // ---------- Side panel + modal ----------
@@ -390,7 +416,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
       modalCarouselDots.appendChild(dot);
     });
 
-    modalCaption.textContent = `Sample ${label} - Image ${startIndex + 1} of ${images.length}`;
+    modalCaption.textContent = `Sample ${currentLabel} - Image ${startIndex + 1} of ${images.length}`;
     imgModal.style.display = "block";
     document.body.style.overflow = "hidden";
   }
@@ -519,6 +545,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         const lng = parseFloat(row.x);
         const label = row["Point ID"].trim();
         const seriesName = seriesByPoint[label] || label;
+        const fillColor = seriesColors[seriesName] || "#808080";
 
         if (exclude.includes(label)) return;
         if (isNaN(lat) || isNaN(lng)) return;
@@ -540,9 +567,10 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         const marker = L.circleMarker([lat, lng], {
           radius: 6,
-          color: "#007BFF",
-          fillColor: "#3399FF",
-          fillOpacity: 0.0
+          color: defaultMarkerStyle.color,
+          weight: defaultMarkerStyle.weight,
+          fillColor: fillColor,
+          fillOpacity: defaultMarkerStyle.fillOpacity
         });
 
         marker.bindPopup(popupHTML);
@@ -566,7 +594,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         markers.forEach((m, i) => {
           setTimeout(() => {
             m.addTo(map);
-            m.setStyle({ fillOpacity: 0.30 });
+            m.setStyle({ fillOpacity: 0.35 });
             setTimeout(() => m.setStyle({ fillOpacity: 0.60 }), 60);
             setTimeout(() => m.setStyle({ fillOpacity: 0.85 }), 120);
           }, i * delayMs);
