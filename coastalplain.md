@@ -22,11 +22,49 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     flex-wrap: wrap;
     margin-bottom: 1.5em;
   }
-  #map {
-    height: 520px;
+  #mapColumn {
     flex: 2;
     min-width: 320px;
+  }
+  #map {
+    height: 520px;
+    width: 100%;
     border-radius: 12px;
+  }
+  #legend {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(0,0,0,0.15);
+    border-radius: 12px;
+    background: #fff;
+  }
+  #legend h4 {
+    margin: 0 0 10px;
+  }
+  .legend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 8px 16px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+  .legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid #000;
+    flex: 0 0 14px;
+  }
+  .legend-item a {
+    color: inherit;
+    text-decoration: underline;
+  }
+  .legend-item span {
+    color: inherit;
   }
   #infoPanel {
     flex: 1;
@@ -44,6 +82,10 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
   /* Leaflet popup polish */
   .leaflet-popup-content { margin: 10px 12px; }
+  .series-link {
+    color: inherit;
+    text-decoration: underline;
+  }
 
   /* Popup image: preserve aspect ratio (no stretching) */
   .popup-img {
@@ -236,7 +278,13 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 </style>
 
 <div id="mapWrap">
-  <div id="map"></div>
+  <div id="mapColumn">
+    <div id="map"></div>
+    <div id="legend" aria-label="Map legend">
+      <h4>Soil Series Legend</h4>
+      <div class="legend-grid" id="legendGrid"></div>
+    </div>
+  </div>
 
   <div id="infoPanel" aria-live="polite">
     <h3>Welcome</h3>
@@ -377,6 +425,32 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "Bonneau": "#d3d3d3",
     "Disturbed": "#808080"
   };
+  const seriesDisplayOrder = [
+    "Faceville",
+    "Orangeburg",
+    "Lucy",
+    "Troup",
+    "Greenville",
+    "Leefield",
+    "Blanton",
+    "Norfolk",
+    "Dothan",
+    "Johns",
+    "Red Bay",
+    "Benevolence",
+    "Lakeland",
+    "Wagram",
+    "Bonneau",
+    "Disturbed"
+  ];
+  const seriesLinks = Object.fromEntries(
+    seriesDisplayOrder
+      .filter(series => series !== "Disturbed")
+      .map(series => [
+        series,
+        `https://casoilresource.lawr.ucdavis.edu/sde/?series=${encodeURIComponent(series.toUpperCase())}#osd`
+      ])
+  );
 
   // ---------- Side panel + modal ----------
   const panel = document.getElementById("infoPanel");
@@ -384,10 +458,55 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   const modalCarouselImages = document.getElementById("modalCarouselImages");
   const modalCarouselDots = document.getElementById("modalCarouselDots");
   const modalCaption = document.getElementById("modalCaption");
+  const legendGrid = document.getElementById("legendGrid");
 
   let currentModalIndex = 0;
   let modalImagesSources = [];
   let currentLabel = '';
+
+  function escapeHtml(text) {
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function getSeriesLinkHTML(seriesName) {
+    const safeSeriesName = escapeHtml(seriesName);
+    const url = seriesLinks[seriesName];
+
+    if (!url) return safeSeriesName;
+
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="series-link">${safeSeriesName}</a>`;
+  }
+
+  function renderLegend() {
+    legendGrid.innerHTML = '';
+
+    seriesDisplayOrder.forEach((seriesName) => {
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+
+      const swatch = document.createElement('span');
+      swatch.className = 'legend-swatch';
+      swatch.style.backgroundColor = seriesColors[seriesName] || '#808080';
+      item.appendChild(swatch);
+
+      const label = document.createElement(seriesLinks[seriesName] ? 'a' : 'span');
+      label.textContent = seriesName;
+
+      if (seriesLinks[seriesName]) {
+        label.href = seriesLinks[seriesName];
+        label.target = '_blank';
+        label.rel = 'noopener noreferrer';
+      }
+
+      item.appendChild(label);
+      legendGrid.appendChild(item);
+    });
+  }
 
   // Open modal with carousel
   function openModal(images, label, startIndex = 0) {
@@ -508,7 +627,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     panelCurrentIndex = 0; // Reset to first image
 
     panel.innerHTML = `
-      <h3>${seriesName}</h3>
+      <h3>${getSeriesLinkHTML(seriesName)}</h3>
       <p class="muted">Point ${label} | Lat: ${lat.toFixed(6)} | Lon: ${lng.toFixed(6)}</p>
       <div class="image-carousel">
         <div class="carousel-images">
@@ -537,6 +656,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     complete: function(results) {
 
       const markers = [];
+      renderLegend();
 
       results.data.forEach(function(row) {
         if (!row.x || !row.y || !row["Point ID"]) return;
@@ -558,7 +678,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         // Simple popup with just the first image (no carousel in popup)
         const popupHTML = `
-          <b>${seriesName}</b><br>
+          <b>${getSeriesLinkHTML(seriesName)}</b><br>
           <span>Point ${label}</span><br>
           <img src="${profileImg}" class="popup-img"
                alt="Profile image for ${seriesName} (Point ${label})"
