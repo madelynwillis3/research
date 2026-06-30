@@ -38,8 +38,26 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     border-radius: 12px;
     background: #fff;
   }
-  #legend h4 {
-    margin: 0 0 10px;
+  .legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .legend-header h4 {
+    margin: 0;
+  }
+  #resetLegendBtn {
+    border: 1px solid rgba(0,0,0,0.2);
+    background: #f7f7f7;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  #resetLegendBtn:hover {
+    background: #ececec;
   }
   .legend-grid {
     display: grid;
@@ -51,6 +69,20 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     align-items: center;
     gap: 8px;
     font-size: 0.95rem;
+    padding: 6px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  }
+  .legend-item:hover {
+    background: rgba(0,0,0,0.05);
+  }
+  .legend-item.active {
+    background: rgba(0,0,0,0.08);
+    font-weight: 600;
+  }
+  .legend-item.dimmed {
+    opacity: 0.45;
   }
   .legend-swatch {
     width: 14px;
@@ -59,11 +91,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     border: 1.5px solid #000;
     flex: 0 0 14px;
   }
-  .legend-item a {
-    color: inherit;
-    text-decoration: underline;
-  }
-  .legend-item span {
+  .legend-label {
     color: inherit;
   }
   #infoPanel {
@@ -281,7 +309,10 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   <div id="mapColumn">
     <div id="map"></div>
     <div id="legend" aria-label="Map legend">
-      <h4>Soil Series Legend</h4>
+      <div class="legend-header">
+        <h4>Soil Series Legend</h4>
+        <button id="resetLegendBtn" type="button">Show all</button>
+      </div>
       <div class="legend-grid" id="legendGrid"></div>
     </div>
   </div>
@@ -328,7 +359,20 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   const defaultMarkerStyle = {
     color: "#000000",
     weight: 1.5,
-    fillOpacity: 0.0
+    fillOpacity: 0.85,
+    opacity: 1,
+    radius: 6
+  };
+  const dimmedMarkerStyle = {
+    fillOpacity: 0.15,
+    opacity: 0.25,
+    radius: 5
+  };
+  const highlightedMarkerStyle = {
+    fillOpacity: 1,
+    opacity: 1,
+    radius: 8,
+    weight: 2.5
   };
   const seriesByPoint = {
     "P2": "Thursa",
@@ -449,10 +493,13 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   const modalCarouselDots = document.getElementById("modalCarouselDots");
   const modalCaption = document.getElementById("modalCaption");
   const legendGrid = document.getElementById("legendGrid");
+  const resetLegendBtn = document.getElementById("resetLegendBtn");
 
   let currentModalIndex = 0;
   let modalImagesSources = [];
   let currentLabel = '';
+  let activeSeries = null;
+  let markerEntries = [];
 
   function escapeHtml(text) {
     return String(text)
@@ -472,31 +519,93 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="series-link">${safeSeriesName}</a>`;
   }
 
+  function updateLegendState() {
+    const items = legendGrid.querySelectorAll('.legend-item');
+    items.forEach((item) => {
+      const seriesName = item.dataset.series;
+      item.classList.toggle('active', activeSeries === seriesName);
+      item.classList.toggle('dimmed', !!activeSeries && activeSeries !== seriesName);
+    });
+  }
+
+  function pulseMarker(marker) {
+    marker.setStyle({ radius: 10, weight: 3 });
+    setTimeout(() => marker.setStyle({ radius: highlightedMarkerStyle.radius, weight: highlightedMarkerStyle.weight }), 180);
+    setTimeout(() => marker.setStyle({ radius: 10, weight: 3 }), 360);
+    setTimeout(() => marker.setStyle({ radius: highlightedMarkerStyle.radius, weight: highlightedMarkerStyle.weight }), 540);
+  }
+
+  function applySeriesHighlight(seriesName) {
+    activeSeries = seriesName;
+    markerEntries.forEach(({ marker, series }) => {
+      if (series === seriesName) {
+        marker.setStyle({
+          fillOpacity: highlightedMarkerStyle.fillOpacity,
+          opacity: highlightedMarkerStyle.opacity,
+          radius: highlightedMarkerStyle.radius,
+          weight: highlightedMarkerStyle.weight
+        });
+        pulseMarker(marker);
+      } else {
+        marker.setStyle({
+          fillOpacity: dimmedMarkerStyle.fillOpacity,
+          opacity: dimmedMarkerStyle.opacity,
+          radius: dimmedMarkerStyle.radius,
+          weight: defaultMarkerStyle.weight
+        });
+      }
+    });
+    updateLegendState();
+  }
+
+  function resetSeriesHighlight() {
+    activeSeries = null;
+    markerEntries.forEach(({ marker }) => {
+      marker.setStyle({
+        fillOpacity: defaultMarkerStyle.fillOpacity,
+        opacity: defaultMarkerStyle.opacity,
+        radius: defaultMarkerStyle.radius,
+        weight: defaultMarkerStyle.weight
+      });
+    });
+    updateLegendState();
+  }
+
   function renderLegend() {
     legendGrid.innerHTML = '';
 
     seriesDisplayOrder.forEach((seriesName) => {
-      const item = document.createElement('div');
+      const item = document.createElement('button');
+      item.type = 'button';
       item.className = 'legend-item';
+      item.dataset.series = seriesName;
+      item.setAttribute('aria-pressed', 'false');
 
       const swatch = document.createElement('span');
       swatch.className = 'legend-swatch';
       swatch.style.backgroundColor = seriesColors[seriesName] || '#808080';
       item.appendChild(swatch);
 
-      const label = document.createElement(seriesLinks[seriesName] ? 'a' : 'span');
+      const label = document.createElement('span');
+      label.className = 'legend-label';
       label.textContent = `${seriesName} (${seriesCounts[seriesName]})`;
-
-      if (seriesLinks[seriesName]) {
-        label.href = seriesLinks[seriesName];
-        label.target = '_blank';
-        label.rel = 'noopener noreferrer';
-      }
-
       item.appendChild(label);
+
+      item.addEventListener('click', () => {
+        if (activeSeries === seriesName) {
+          resetSeriesHighlight();
+        } else {
+          applySeriesHighlight(seriesName);
+        }
+      });
+
       legendGrid.appendChild(item);
     });
+
+    updateLegendState();
   }
+
+  resetLegendBtn.addEventListener('click', resetSeriesHighlight);
 
   // Open modal with carousel
   function openModal(images, label, startIndex = 0) {
@@ -504,11 +613,9 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     currentLabel = label;
     currentModalIndex = startIndex;
 
-    // Clear previous content
     modalCarouselImages.innerHTML = '';
     modalCarouselDots.innerHTML = '';
 
-    // Add images
     images.forEach((imgSrc, index) => {
       const img = document.createElement('img');
       img.src = imgSrc;
@@ -517,7 +624,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
       modalCarouselImages.appendChild(img);
     });
 
-    // Add dots
     images.forEach((_, index) => {
       const dot = document.createElement('span');
       dot.className = 'dot' + (index === startIndex ? ' active' : '');
@@ -564,7 +670,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     modalCaption.textContent = `Sample ${currentLabel} - Image ${currentModalIndex + 1} of ${images.length}`;
   }
 
-  // Keyboard navigation for modal
   document.addEventListener("keydown", (e) => {
     if (imgModal.style.display === "block") {
       if (e.key === "Escape") closeModalFn();
@@ -573,7 +678,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     }
   });
 
-  // Panel carousel functions
   let panelCurrentIndex = 0;
 
   function changePanelImage(direction) {
@@ -608,13 +712,12 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     dots[panelCurrentIndex].classList.add('active');
   }
 
-  // Make functions globally available
   window.changePanelImage = changePanelImage;
   window.goToPanelImage = goToPanelImage;
 
   function setPanelContent(label, lat, lng, images) {
     const seriesName = seriesByPoint[label] || label;
-    panelCurrentIndex = 0; // Reset to first image
+    panelCurrentIndex = 0;
 
     panel.innerHTML = `
       <h3>${getSeriesLinkHTML(seriesName)}</h3>
@@ -637,15 +740,14 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     `;
   }
 
-  // ---------- CSV parse + animated marker drop ----------
   let targetLatLng = null;
 
   Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
     download: true,
     header: true,
     complete: function(results) {
-
       const markers = [];
+      markerEntries = [];
       renderLegend();
 
       results.data.forEach(function(row) {
@@ -666,7 +768,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         const fieldImg = `${fieldPhotoBase}${label}.jpg`;
         const images = [profileImg, fieldImg];
 
-        // Simple popup with just the first image (no carousel in popup)
         const popupHTML = `
           <b>${getSeriesLinkHTML(seriesName)}</b><br>
           <span>Point ${label}</span><br>
@@ -676,37 +777,36 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         `;
 
         const marker = L.circleMarker([lat, lng], {
-          radius: 6,
+          radius: defaultMarkerStyle.radius,
           color: defaultMarkerStyle.color,
           weight: defaultMarkerStyle.weight,
           fillColor: fillColor,
-          fillOpacity: defaultMarkerStyle.fillOpacity
+          fillOpacity: 0.0,
+          opacity: 0
         });
 
         marker.bindPopup(popupHTML);
 
-        // Click updates side panel AND opens the small map popup
         marker.on("click", () => {
           setPanelContent(label, lat, lng, images);
           marker.openPopup();
         });
 
         markers.push(marker);
+        markerEntries.push({ marker, series: seriesName });
       });
 
-      // Smooth animated fly-in (slightly zoomed out)
       const target = targetLatLng || [32.43, -83.73];
       map.flyTo(target, 15, { animate: true, duration: 1.6 });
 
-      // Sequential marker fade-in
       setTimeout(() => {
         const delayMs = 30;
         markers.forEach((m, i) => {
           setTimeout(() => {
             m.addTo(map);
-            m.setStyle({ fillOpacity: 0.35 });
-            setTimeout(() => m.setStyle({ fillOpacity: 0.60 }), 60);
-            setTimeout(() => m.setStyle({ fillOpacity: 0.85 }), 120);
+            m.setStyle({ fillOpacity: 0.35, opacity: 0.5 });
+            setTimeout(() => m.setStyle({ fillOpacity: 0.60, opacity: 0.75 }), 60);
+            setTimeout(() => m.setStyle({ fillOpacity: defaultMarkerStyle.fillOpacity, opacity: defaultMarkerStyle.opacity }), 120);
           }, i * delayMs);
         });
       }, 1700);
