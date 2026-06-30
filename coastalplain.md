@@ -277,6 +277,80 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
   const fieldPhotoBase = 'https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_';
   const exclude = ["39", "50", "51", "58", "59", "60", "65", "74"];
+  const seriesByPoint = {
+    "P2": "Thursa",
+    "P3": "Faceville",
+    "P4": "Faceville",
+    "1": "Orangeburg",
+    "2": "Faceville",
+    "3": "Faceville",
+    "4": "Faceville",
+    "5": "Wagram",
+    "6": "Norfolk",
+    "7": "Bonneau",
+    "8": "Wagram",
+    "9": "Orangeburg",
+    "10": "Esto",
+    "11": "Norfolk",
+    "12": "Orangeburg",
+    "13": "Norfolk",
+    "14": "Orangeburg",
+    "15": "Dothan",
+    "16": "Lakeland",
+    "17": "Orangeburg",
+    "18": "Orangeburg",
+    "19": "Faceville",
+    "20": "Marvyn",
+    "21": "Norfolk",
+    "22": "Orangeburg",
+    "23": "Norfolk",
+    "24": "Norfolk",
+    "25": "Lakeland",
+    "26": "Benevolence",
+    "27": "Greenville",
+    "28": "Greenville",
+    "29": "Red Bay",
+    "30": "Faceville",
+    "31": "Faceville",
+    "32": "Norfolk",
+    "33": "Norfolk",
+    "34": "Johns",
+    "36": "Orangeburg",
+    "37": "Faceville",
+    "38": "Faceville",
+    "40": "Greenville",
+    "41": "Orangeburg",
+    "42": "Dothan",
+    "43": "Norfolk",
+    "44": "Blanton",
+    "45": "Greenville",
+    "46": "Greenville",
+    "47": "Faceville",
+    "48": "Greenville",
+    "52": "Leefield",
+    "53": "Orangeburg",
+    "54": "Faceville",
+    "55": "Faceville",
+    "56": "Faceville",
+    "57": "Greenville",
+    "61": "Greenville",
+    "62": "Greenville",
+    "63": "Lucy",
+    "64": "Greenville",
+    "66": "Faceville",
+    "67": "Faceville",
+    "68": "Greenville",
+    "69": "Faceville",
+    "70": "Faceville",
+    "71": "Greenville",
+    "72": "Orangeburg",
+    "75": "Faceville",
+    "76": "Orangeburg",
+    "77": "Orangeburg",
+    "78": "Lucy",
+    "79": "Troup",
+    "80": "Troup"
+  };
 
   // ---------- Side panel + modal ----------
   const panel = document.getElementById("infoPanel");
@@ -404,15 +478,16 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   window.goToPanelImage = goToPanelImage;
 
   function setPanelContent(label, lat, lng, images) {
+    const seriesName = seriesByPoint[label] || label;
     panelCurrentIndex = 0; // Reset to first image
 
     panel.innerHTML = `
-      <h3>Sample ${label}</h3>
-      <p class="muted">Lat: ${lat.toFixed(6)} | Lon: ${lng.toFixed(6)}</p>
+      <h3>${seriesName}</h3>
+      <p class="muted">Point ${label} | Lat: ${lat.toFixed(6)} | Lon: ${lng.toFixed(6)}</p>
       <div class="image-carousel">
         <div class="carousel-images">
-          <img src="${images[0]}" class="carousel-image active" alt="Profile image for Sample ${label}" onclick="openModal(${JSON.stringify(images).replace(/"/g, '&quot;')}, '${label}', 0)">
-          <img src="${images[1]}" class="carousel-image" alt="Field photo for Sample ${label}" onclick="openModal(${JSON.stringify(images).replace(/"/g, '&quot;')}, '${label}', 1)">
+          <img src="${images[0]}" class="carousel-image active" alt="Profile image for ${seriesName} (Point ${label})" onclick="openModal(${JSON.stringify(images).replace(/"/g, '&quot;')}, '${label}', 0)">
+          <img src="${images[1]}" class="carousel-image" alt="Field photo for ${seriesName} (Point ${label})" onclick="openModal(${JSON.stringify(images).replace(/"/g, '&quot;')}, '${label}', 1)">
         </div>
         <button class="carousel-arrow left" onclick="changePanelImage(-1)">‹</button>
         <button class="carousel-arrow right" onclick="changePanelImage(1)">›</button>
@@ -443,6 +518,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         const lat = parseFloat(row.y);
         const lng = parseFloat(row.x);
         const label = row["Point ID"].trim();
+        const seriesName = seriesByPoint[label] || label;
 
         if (exclude.includes(label)) return;
         if (isNaN(lat) || isNaN(lng)) return;
@@ -455,9 +531,10 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         // Simple popup with just the first image (no carousel in popup)
         const popupHTML = `
-          <b>Sample ${label}</b><br>
+          <b>${seriesName}</b><br>
+          <span>Point ${label}</span><br>
           <img src="${profileImg}" class="popup-img"
-               alt="Profile image for Sample ${label}"
+               alt="Profile image for ${seriesName} (Point ${label})"
                onclick="openModal(${JSON.stringify(images).replace(/"/g, '&quot;')}, '${label}', 0)">
         `;
 
