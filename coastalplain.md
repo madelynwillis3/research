@@ -409,13 +409,13 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   };
   const seriesColors = {
     "Faceville": "#d73027",
-    "Orangeburg": "#f28c28",
+    "Orangeburg": "#c94c4c",
     "Lucy": "#e76f51",
     "Troup": "#f4a6a6",
     "Greenville": "#8b0000",
     "Leefield": "#d8c3a5",
     "Blanton": "#8a7f73",
-    "Norfolk": "#d3d3d3",
+    "Norfolk": "#f28c28",
     "Dothan": "#d4a017",
     "Johns": "#c2a878",
     "Red Bay": "#5c0000",
@@ -425,24 +425,14 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "Bonneau": "#d3d3d3",
     "Disturbed": "#808080"
   };
-  const seriesDisplayOrder = [
-    "Faceville",
-    "Orangeburg",
-    "Lucy",
-    "Troup",
-    "Greenville",
-    "Leefield",
-    "Blanton",
-    "Norfolk",
-    "Dothan",
-    "Johns",
-    "Red Bay",
-    "Benevolence",
-    "Lakeland",
-    "Wagram",
-    "Bonneau",
-    "Disturbed"
-  ];
+  const seriesCounts = Object.values(seriesByPoint).reduce((counts, seriesName) => {
+    counts[seriesName] = (counts[seriesName] || 0) + 1;
+    return counts;
+  }, {});
+  const seriesDisplayOrder = Object.keys(seriesCounts).sort((a, b) => {
+    const countDiff = seriesCounts[b] - seriesCounts[a];
+    return countDiff !== 0 ? countDiff : a.localeCompare(b);
+  });
   const seriesLinks = Object.fromEntries(
     seriesDisplayOrder
       .filter(series => series !== "Disturbed")
@@ -495,7 +485,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
       item.appendChild(swatch);
 
       const label = document.createElement(seriesLinks[seriesName] ? 'a' : 'span');
-      label.textContent = seriesName;
+      label.textContent = `${seriesName} (${seriesCounts[seriesName]})`;
 
       if (seriesLinks[seriesName]) {
         label.href = seriesLinks[seriesName];
