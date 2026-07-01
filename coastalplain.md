@@ -108,14 +108,12 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   #infoPanel h3 { margin: 0 0 6px; }
   #infoPanel .muted { margin: 0 0 10px; opacity: 0.8; font-size: 0.95rem; }
 
-  /* Leaflet popup polish */
   .leaflet-popup-content { margin: 10px 12px; }
   .series-link {
     color: inherit;
     text-decoration: underline;
   }
 
-  /* Popup image: preserve aspect ratio (no stretching) */
   .popup-img {
     width: 160px;
     max-width: 100%;
@@ -128,7 +126,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     object-fit: contain;
   }
 
-  /* Carousel styles for side panel */
   .image-carousel {
     position: relative;
     width: 100%;
@@ -207,7 +204,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     background: rgba(255, 255, 255, 1);
   }
 
-  /* Modal with carousel */
   #imgModal {
     display: none;
     position: fixed;
@@ -323,30 +319,23 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   </div>
 </div>
 
-<!-- Modal for enlarged image with carousel -->
 <div id="imgModal" onclick="closeModalFn(event)">
   <div class="modalCard" onclick="event.stopPropagation()">
     <div class="closeNote" onclick="closeModalFn()">Click outside or press ESC to close</div>
     <div class="modal-carousel" id="modalCarousel">
-      <div class="modal-carousel-images" id="modalCarouselImages">
-        <!-- Images will be inserted here dynamically -->
-      </div>
+      <div class="modal-carousel-images" id="modalCarouselImages"></div>
       <button class="carousel-arrow left" onclick="changeModalImage(-1)">‹</button>
       <button class="carousel-arrow right" onclick="changeModalImage(1)">›</button>
-      <div class="carousel-dots" id="modalCarouselDots">
-        <!-- Dots will be inserted here dynamically -->
-      </div>
+      <div class="carousel-dots" id="modalCarouselDots"></div>
     </div>
     <p class="caption" id="modalCaption"></p>
   </div>
 </div>
 
-<!-- Leaflet JS + PapaParse for CSV -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
-  // ---------- Map base ----------
   var map = L.map('map').setView([32.43, -83.73], 14);
 
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -467,14 +456,18 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     "Lakeland": "#d2a679",
     "Wagram": "#d2a679",
     "Bonneau": "#d3d3d3",
+    "Esto": "#c9a44b",
+    "Marvyn": "#a44a3f",
     "Disturbed": "#808080"
   };
-  const seriesCounts = Object.values(seriesByPoint).reduce((counts, seriesName) => {
-    counts[seriesName] = (counts[seriesName] || 0) + 1;
-    return counts;
-  }, {});
-  const seriesDisplayOrder = Object.keys(seriesCounts).sort((a, b) => {
-    const countDiff = seriesCounts[b] - seriesCounts[a];
+  const visibleSeriesCounts = {};
+  Object.entries(seriesByPoint).forEach(([pointId, seriesName]) => {
+    if (!exclude.includes(pointId)) {
+      visibleSeriesCounts[seriesName] = (visibleSeriesCounts[seriesName] || 0) + 1;
+    }
+  });
+  const seriesDisplayOrder = Object.keys(visibleSeriesCounts).sort((a, b) => {
+    const countDiff = visibleSeriesCounts[b] - visibleSeriesCounts[a];
     return countDiff !== 0 ? countDiff : a.localeCompare(b);
   });
   const seriesLinks = Object.fromEntries(
@@ -486,7 +479,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
       ])
   );
 
-  // ---------- Side panel + modal ----------
   const panel = document.getElementById("infoPanel");
   const imgModal = document.getElementById("imgModal");
   const modalCarouselImages = document.getElementById("modalCarouselImages");
@@ -500,6 +492,8 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   let currentLabel = '';
   let activeSeries = null;
   let markerEntries = [];
+  let panelCurrentIndex = 0;
+  let targetLatLng = null;
 
   function escapeHtml(text) {
     return String(text)
@@ -513,9 +507,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   function getSeriesLinkHTML(seriesName) {
     const safeSeriesName = escapeHtml(seriesName);
     const url = seriesLinks[seriesName];
-
     if (!url) return safeSeriesName;
-
     return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="series-link">${safeSeriesName}</a>`;
   }
 
@@ -523,8 +515,10 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     const items = legendGrid.querySelectorAll('.legend-item');
     items.forEach((item) => {
       const seriesName = item.dataset.series;
-      item.classList.toggle('active', activeSeries === seriesName);
+      const isActive = activeSeries === seriesName;
+      item.classList.toggle('active', isActive);
       item.classList.toggle('dimmed', !!activeSeries && activeSeries !== seriesName);
+      item.setAttribute('aria-pressed', isActive ? 'true' : 'false');
     });
   }
 
@@ -573,7 +567,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
   function renderLegend() {
     legendGrid.innerHTML = '';
-
     seriesDisplayOrder.forEach((seriesName) => {
       const item = document.createElement('button');
       item.type = 'button';
@@ -588,7 +581,7 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
       const label = document.createElement('span');
       label.className = 'legend-label';
-      label.textContent = `${seriesName} (${seriesCounts[seriesName]})`;
+      label.textContent = `${seriesName} (${visibleSeriesCounts[seriesName]})`;
       item.appendChild(label);
 
       item.addEventListener('click', () => {
@@ -601,18 +594,15 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
       legendGrid.appendChild(item);
     });
-
     updateLegendState();
   }
 
   resetLegendBtn.addEventListener('click', resetSeriesHighlight);
 
-  // Open modal with carousel
   function openModal(images, label, startIndex = 0) {
     modalImagesSources = images;
     currentLabel = label;
     currentModalIndex = startIndex;
-
     modalCarouselImages.innerHTML = '';
     modalCarouselDots.innerHTML = '';
 
@@ -645,12 +635,9 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   function changeModalImage(direction) {
     const images = modalCarouselImages.querySelectorAll('.modal-carousel-image');
     const dots = modalCarouselDots.querySelectorAll('.dot');
-
     images[currentModalIndex].classList.remove('active');
     dots[currentModalIndex].classList.remove('active');
-
     currentModalIndex = (currentModalIndex + direction + images.length) % images.length;
-
     images[currentModalIndex].classList.add('active');
     dots[currentModalIndex].classList.add('active');
     modalCaption.textContent = `Sample ${currentLabel} - Image ${currentModalIndex + 1} of ${images.length}`;
@@ -659,12 +646,9 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   function goToModalImage(index) {
     const images = modalCarouselImages.querySelectorAll('.modal-carousel-image');
     const dots = modalCarouselDots.querySelectorAll('.dot');
-
     images[currentModalIndex].classList.remove('active');
     dots[currentModalIndex].classList.remove('active');
-
     currentModalIndex = index;
-
     images[currentModalIndex].classList.add('active');
     dots[currentModalIndex].classList.add('active');
     modalCaption.textContent = `Sample ${currentLabel} - Image ${currentModalIndex + 1} of ${images.length}`;
@@ -678,20 +662,14 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     }
   });
 
-  let panelCurrentIndex = 0;
-
   function changePanelImage(direction) {
     const carousel = panel.querySelector('.image-carousel');
     if (!carousel) return;
-
     const images = carousel.querySelectorAll('.carousel-image');
     const dots = carousel.querySelectorAll('.dot');
-
     images[panelCurrentIndex].classList.remove('active');
     dots[panelCurrentIndex].classList.remove('active');
-
     panelCurrentIndex = (panelCurrentIndex + direction + images.length) % images.length;
-
     images[panelCurrentIndex].classList.add('active');
     dots[panelCurrentIndex].classList.add('active');
   }
@@ -699,15 +677,11 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   function goToPanelImage(index) {
     const carousel = panel.querySelector('.image-carousel');
     if (!carousel) return;
-
     const images = carousel.querySelectorAll('.carousel-image');
     const dots = carousel.querySelectorAll('.dot');
-
     images[panelCurrentIndex].classList.remove('active');
     dots[panelCurrentIndex].classList.remove('active');
-
     panelCurrentIndex = index;
-
     images[panelCurrentIndex].classList.add('active');
     dots[panelCurrentIndex].classList.add('active');
   }
@@ -718,7 +692,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
   function setPanelContent(label, lat, lng, images) {
     const seriesName = seriesByPoint[label] || label;
     panelCurrentIndex = 0;
-
     panel.innerHTML = `
       <h3>${getSeriesLinkHTML(seriesName)}</h3>
       <p class="muted">Point ${label} | Lat: ${lat.toFixed(6)} | Lon: ${lng.toFixed(6)}</p>
@@ -740,8 +713,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
     `;
   }
 
-  let targetLatLng = null;
-
   Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
     download: true,
     header: true,
@@ -761,7 +732,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
 
         if (exclude.includes(label)) return;
         if (isNaN(lat) || isNaN(lng)) return;
-
         if (label === "45") targetLatLng = [lat, lng];
 
         const profileImg = `${imgBase}${label}.jpg`;
@@ -786,7 +756,6 @@ This site is situated in the northern Coastal Plain, where 75 soil profiles were
         });
 
         marker.bindPopup(popupHTML);
-
         marker.on("click", () => {
           setPanelContent(label, lat, lng, images);
           marker.openPopup();
