@@ -6,12 +6,19 @@ permalink: /about/cv/
 
 # Madelyn Willis
 
-M.S Student, University of Georgia, Department of Crop and Soil Sciences
+M.S. Graduate, University of Georgia, Department of Crop and Soil Sciences
 
 [Madelyn.Willis@uga.edu](mailto:Madelyn.Willis@uga.edu)
 
 ## Education
+University of Georgia – Master of Science in Crop and Soil Sciences, Summer 2026
+- Concentration in Soil Science
+- GPA: 3.96
+- Thesis: Exploring Agricultural Soils in the Southeastern Coastal Plain: An Analysis of Taxonomy, Management, and Sampling Strategy
+- Major Advisor: Dr. Matthew Levi
+
 University of Georgia – Bachelor of Science in Environmental Science, Fall 2023
+- GPA: 3.7
 - Certificate in Geographical Information Systems (GIS)
 - Undergraduate research: Impact of soil erosion and community trails on an old-growth tree environment
 
@@ -20,11 +27,20 @@ University of Georgia – Bachelor of Science in Environmental Science, Fall 202
   - Conducted laboratory and field work, collaborated with land managers and farmers
 - Undergraduate Research Assistant, Remote Sensing Lab – University of Georgia - Fall 2023 to Spring 2024
   - Performed analytical and field work using R.S imagery and spatial data
-- Graduate Research Assistant, Pedology Lab - University of Georgia - Fall 2024 to present
-  - Conducting M.S. thesis research: Digital Soil Mapping in the U.S. Southern Coastal Plain
+- Graduate Research Assistant, Pedology Lab - University of Georgia - Fall 2024 to Summer 2026
+  - Conducted M.S. thesis research: Digital Soil Mapping in the U.S. Southern Coastal Plain
+
+## Skills & Expertise
+**Spatial Analysis & Modeling:** Investigated spatial controls on weed emergence across fallow and cropland systems; evaluated soil sampling strategies (single-point vs. composite) at field to landscape scales; developed agricultural management zones integrating soil, topographic, and remotely sensed environmental covariates; conducted spatial modeling of soil properties using geostatistics (kriging, regression kriging) and machine learning.
+
+**Programming & Data Analysis:** R, Python, HTML; statistical modeling; machine learning (random forest, XGBoost, UMAP clustering, classification); geostatistics (kriging, regression kriging); high-dimensional dataset analysis.
+
+**Geospatial & Remote Sensing:** ArcGIS Pro, QGIS, Google Earth Engine, ENVI, ERDAS, SAGA GIS; spatial analysis; raster and vector processing.
+
+**Field & Laboratory Methods:** Soil, plant, and water sampling; soil profile description; environmental monitoring; plant and weed identification; cover crop and cash crop field management; wetland fieldwork; lab protocol development; soil fertility metrics and amendment recommendations.
 
 ## Teaching Positions
-- Teaching Assistant (CRSS 2010/2010L), Crop Science – July 2025 to present
+- Teaching Assistant (CRSS 2010/2010L), Crop Science – 2025
 
 ## Student Organization Roles
 - Lead Officer – Crop and Soil Science Student Society
