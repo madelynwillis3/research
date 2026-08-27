@@ -8,7 +8,7 @@ permalink: /about/cv/
 
 M.S. Graduate, University of Georgia, Department of Crop and Soil Sciences
 
-[Madelyn.Willis@uga.edu](mailto:Madelyn.Willis@uga.edu)
+[madelyn.willis@gmail.com](mailto:madelyn.willis@gmail.com)
 
 ## Education
 University of Georgia – Master of Science in Crop and Soil Sciences, Summer 2026
