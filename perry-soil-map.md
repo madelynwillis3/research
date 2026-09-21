@@ -19,14 +19,15 @@ permalink: /perry-soil-map/
 
   #mapWrap {
     display: flex;
+    flex-wrap: wrap;          /* FIX: infoPanel was being clipped off the right */
     gap: 18px;
     align-items: flex-start;
     margin: 1.2rem 0 2rem;
   }
 
   #legendColumn {
-    flex: 0 0 260px;
-    width: 260px;
+    flex: 0 0 240px;
+    width: 240px;
   }
 
   #legend {
@@ -137,8 +138,33 @@ permalink: /perry-soil-map/
   }
 
   #mapColumn {
-    flex: 1 1 auto;
-    min-width: 320px;
+    flex: 1 1 420px;
+    min-width: 0;             /* FIX: without this a flex item refuses to shrink */
+  }
+
+  /* vertical class ramp for the active raster */
+  .ramp-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    margin: 2px 0;
+  }
+
+  .ramp-chip {
+    width: 20px;
+    height: 13px;
+    flex: 0 0 20px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  .legend-item.static {
+    cursor: default;
+  }
+
+  .legend-item.static:hover {
+    background: transparent;
   }
 
   #map {
@@ -369,11 +395,102 @@ permalink: /perry-soil-map/
   const excluded = ['39', '50', '51', '58', '59', '60', '65', '74'];
 
   const seriesByPoint = {
-    P2: 'Thursa', P3: 'Faceville', P4: 'Faceville', '1': 'Orangeburg', '2': 'Faceville', '3': 'Faceville', '4': 'Faceville', '5': 'Wagram', '6': 'Norfolk', '7': 'Bonneau', '8': 'Wagram', '9': 'Orangeburg', '10': 'Wagram', '11': 'Faceville', '12': 'Grady', '13': 'Troup', '14': 'Lucy', '15': 'Faceville', '16': 'Norfolk', '17': 'Faceville', '18': 'Bonneau', '19': 'Wagram', '20': 'Blanton'
+    "P2": "Thursa",
+    "P3": "Faceville",
+    "P4": "Faceville",
+    "1": "Orangeburg",
+    "2": "Faceville",
+    "3": "Faceville",
+    "4": "Faceville",
+    "5": "Wagram",
+    "6": "Norfolk",
+    "7": "Bonneau",
+    "8": "Wagram",
+    "9": "Orangeburg",
+    "10": "Esto",
+    "11": "Norfolk",
+    "12": "Orangeburg",
+    "13": "Norfolk",
+    "14": "Orangeburg",
+    "15": "Dothan",
+    "16": "Lakeland",
+    "17": "Orangeburg",
+    "18": "Orangeburg",
+    "19": "Faceville",
+    "20": "Marvyn",
+    "21": "Norfolk",
+    "22": "Orangeburg",
+    "23": "Norfolk",
+    "24": "Norfolk",
+    "25": "Lakeland",
+    "26": "Benevolence",
+    "27": "Greenville",
+    "28": "Greenville",
+    "29": "Red Bay",
+    "30": "Faceville",
+    "31": "Faceville",
+    "32": "Norfolk",
+    "33": "Norfolk",
+    "34": "Johns",
+    "35": "Disturbed",
+    "36": "Orangeburg",
+    "37": "Faceville",
+    "38": "Faceville",
+    "40": "Greenville",
+    "41": "Orangeburg",
+    "42": "Dothan",
+    "43": "Norfolk",
+    "44": "Blanton",
+    "45": "Greenville",
+    "46": "Greenville",
+    "47": "Faceville",
+    "48": "Greenville",
+    "49": "Disturbed",
+    "52": "Leefield",
+    "53": "Orangeburg",
+    "54": "Faceville",
+    "55": "Faceville",
+    "56": "Faceville",
+    "57": "Greenville",
+    "61": "Greenville",
+    "62": "Greenville",
+    "63": "Lucy",
+    "64": "Greenville",
+    "66": "Faceville",
+    "67": "Faceville",
+    "68": "Greenville",
+    "69": "Faceville",
+    "70": "Faceville",
+    "71": "Greenville",
+    "72": "Orangeburg",
+    "73": "Disturbed",
+    "75": "Faceville",
+    "76": "Orangeburg",
+    "77": "Orangeburg",
+    "78": "Lucy",
+    "79": "Troup",
+    "80": "Troup"
   };
 
   const seriesColors = {
-    Faceville: '#d73027', Orangeburg: '#c94c4c', Lucy: '#e76f51', Troup: '#f4a6a6', Greenville: '#8b0000', Leefield: '#d8c3a5', Blanton: '#8a7f73', Norfolk: '#f28c28', Dothan: '#d4a017', Johns: '#c2a84d', Wagram: '#a6d96a', Bonneau: '#65a765', Thursa: '#3b7f61', Grady: '#6a5acd', Disturbed: '#7a7a7a'
+    "Faceville": "#d73027",
+    "Orangeburg": "#c94c4c",
+    "Lucy": "#e76f51",
+    "Troup": "#f4a6a6",
+    "Greenville": "#8b0000",
+    "Leefield": "#d8c3a5",
+    "Blanton": "#8a7f73",
+    "Norfolk": "#f28c28",
+    "Dothan": "#d4a017",
+    "Johns": "#c2a878",
+    "Red Bay": "#5c0000",
+    "Benevolence": "#fa8072",
+    "Lakeland": "#d2a679",
+    "Wagram": "#d2a679",
+    "Bonneau": "#d3d3d3",
+    "Esto": "#c9a44b",
+    "Marvyn": "#a44a3f",
+    "Disturbed": "#808080"
   };
 
   const defaultMarkerStyle = { color: '#000', weight: 1.5, fillOpacity: 0.85, opacity: 1, radius: 6 };
@@ -408,7 +525,8 @@ permalink: /perry-soil-map/
   }).addTo(map);
   const boundaryLayer = L.geoJSON(null, {
     pane: 'soilVector',
-    style: () => ({ color: '#4d4d4d', weight: 1.5, opacity: 0.9, fillOpacity: 0 })
+    // dashed, so it reads as distinct from the solid site border
+    style: () => ({ color: '#4d4d4d', weight: 1.5, opacity: 0.9, fillOpacity: 0, dashArray: '6,4' })
   }).addTo(map);
   const borderLayer = L.geoJSON(null, {
     pane: 'soilVector',
@@ -418,13 +536,14 @@ permalink: /perry-soil-map/
   const state = {
     manifest: null,
     activeSeries: null,
-    activeRaster: null,
-    visibleRasterIds: new Set(),
-    soilSeriesVisible: true,
-    matchVisible: true,
+    activeRaster: null,          // at most ONE raster at a time
+    rasterOpacity: 0.8,
+    soilSeriesVisible: false,    // opens looking like the pedon map
+    matchVisible: false,
     boundaryVisible: true,
     pedonsVisible: true,
-    siteBorderVisible: true
+    seriesPolyCounts: {},        // counted from soil_series.geojson
+    matchCounts: {}              // counted from ssurgo_matchup.geojson
   };
 
   let markerEntries = [];
@@ -440,83 +559,126 @@ permalink: /perry-soil-map/
 
     const sections = [];
 
-    if (state.activeRaster && state.visibleRasterIds.has(state.activeRaster)) {
+    // ---- 1. active raster: one row per CLASS, high value at top ------------
+    // breaks has one more entry than colors: class i spans breaks[i]..breaks[i+1]
+    if (state.activeRaster && state.manifest) {
       const r = state.manifest.rasters.find((layer) => layer.id === state.activeRaster);
       if (r) {
-        const items = r.breaks.map((breakValue, idx) => {
-          const color = r.colors[Math.min(idx, r.colors.length - 1)];
-          return `<div class="legend-item" data-series="__raster__${r.id}"><span class="legend-swatch" style="background:${color};"></span><span>${breakValue}</span></div>`;
-        });
+        const fmt = (v) => {
+          const a = Math.abs(v);
+          return a >= 100 ? v.toFixed(0) : a >= 10 ? v.toFixed(1) : v.toFixed(2);
+        };
+        const rows = [];
+        for (let i = r.colors.length - 1; i >= 0; i--) {
+          rows.push(`<div class="ramp-row">
+            <span class="ramp-chip" style="background:${r.colors[i]}"></span>
+            <span>${fmt(r.breaks[i])} &ndash; ${fmt(r.breaks[i + 1])}</span>
+          </div>`);
+        }
         sections.push(`
           <div class="legend-section">
-            <h5>${esc(r.title)}</h5>
-            <div class="legend-item"><span class="legend-swatch" style="background:linear-gradient(90deg, ${r.colors.join(',')});"></span><span>${esc(r.unit || 'value')}</span></div>
-            <div style="display:flex;flex-direction:column;gap:4px;margin-top:8px;">${items.join('')}</div>
+            <h5>${esc(r.title)}${r.unit ? ' (' + esc(r.unit) + ')' : ''}</h5>
+            ${rows.join('')}
           </div>
         `);
       }
     }
 
-    if (state.soilSeriesVisible) {
+    // ---- 2. mapped soil series: counted from the POLYGONS, not the points --
+    if (state.soilSeriesVisible && Object.keys(state.seriesPolyCounts).length) {
+      const pal = (state.manifest && state.manifest.vectors.soil_series.palette) || {};
+      const counts = state.seriesPolyCounts;
+      const keys = Object.keys(counts).sort((a, b) =>
+        (a === 'HTM') - (b === 'HTM') || counts[b] - counts[a] || a.localeCompare(b));
+      const rows = keys.map((k) => `
+        <div class="legend-item static">
+          <span class="legend-swatch" style="background:${pal[k] || '#BDBDBD'}"></span>
+          <span>${esc(k)} (${counts[k]})</span>
+        </div>`);
+      sections.push(`
+        <div class="legend-section">
+          <h5>Mapped soil series</h5>
+          ${rows.join('')}
+        </div>
+      `);
+    }
+
+    // ---- 3. SSURGO agreement: two real classes, colours from the manifest --
+    if (state.matchVisible && Object.keys(state.matchCounts).length) {
+      const pal = (state.manifest && state.manifest.vectors.ssurgo_matchup.palette) || {};
+      const c = state.matchCounts;
+      const total = (c.Agree || 0) + (c.Disagree || 0);
+      const rows = ['Agree', 'Disagree']
+        .filter((k) => c[k] != null)
+        .map((k) => `
+          <div class="legend-item static">
+            <span class="legend-swatch" style="background:${pal[k] || '#999'}"></span>
+            <span>${k} (${c[k]})</span>
+          </div>`);
+      sections.push(`
+        <div class="legend-section">
+          <h5>SSURGO agreement</h5>
+          ${rows.join('')}
+          <p class="legend-note" style="margin-top:6px;">${c.Agree || 0} of ${total} polygons agree. Disagree includes polygons with no SSURGO overlap.</p>
+        </div>
+      `);
+    }
+
+    // ---- 4. boundaries: dashed vs solid must actually LOOK different ------
+    if (state.boundaryVisible) {
+      sections.push(`
+        <div class="legend-section">
+          <h5>Boundaries</h5>
+          <div class="legend-item static"><span class="legend-swatch line" style="background:repeating-linear-gradient(90deg,#4d4d4d 0 6px,transparent 6px 10px);"></span><span>SSURGO map unit</span></div>
+          <div class="legend-item static"><span class="legend-swatch line" style="background:#1f2937;"></span><span>Site border</span></div>
+        </div>
+      `);
+    }
+
+    // ---- 5. pedon points: the clickable series list ------------------------
+    if (state.pedonsVisible) {
       const counts = {};
       markerEntries.forEach((entry) => {
         const s = entry.series || 'Unknown';
         counts[s] = (counts[s] || 0) + 1;
       });
-      const entries = Object.keys(counts).sort().map((series) => {
+      const keys = Object.keys(counts).sort((a, b) =>
+        counts[b] - counts[a] || a.localeCompare(b));
+      const rows = keys.map((series) => {
         const isActive = state.activeSeries === series;
         return `
           <div class="legend-item ${isActive ? 'active' : ''} ${state.activeSeries && !isActive ? 'dimmed' : ''}" data-series="${esc(series)}" onclick="selectSeries('${series.replace(/'/g, "\\'")}')">
             <span class="legend-swatch circle" style="background:${seriesColors[series] || '#777'}"></span>
             <span>${seriesHTML(series)} (${counts[series]})</span>
-          </div>
-        `;
+          </div>`;
       });
       sections.push(`
         <div class="legend-section">
-          <h5>Mapped soil series</h5>
-          ${entries.join('') || '<div class="legend-item"><span class="legend-swatch circle" style="background:#777"></span><span>None</span></div>'}
+          <h5>Pedon points (${markerEntries.length})</h5>
+          ${rows.join('') || '<div class="legend-item static"><span>Loading&hellip;</span></div>'}
+          ${state.activeSeries ? '<div class="legend-item" onclick="selectSeries(null)" style="font-size:.82rem;color:var(--accent);">&#8630; Show all series</div>' : ''}
         </div>
       `);
     }
 
-    if (state.matchVisible) {
-      sections.push(`
-        <div class="legend-section">
-          <h5>SSURGO agreement</h5>
-          <div class="legend-item"><span class="legend-swatch" style="background:#a3e635"></span><span>Matched</span></div>
-          <div class="legend-item"><span class="legend-swatch" style="background:#fcd34d"></span><span>Partial/uncertain</span></div>
-          <div class="legend-item"><span class="legend-swatch" style="background:#f87171"></span><span>Mismatch</span></div>
-        </div>
-      `);
-    }
+    box.innerHTML = sections.join('') ||
+      '<p class="legend-note">No layers visible. Turn one on to see its legend.</p>';
 
-    if (state.boundaryVisible) {
-      sections.push(`
-        <div class="legend-section">
-          <h5>Boundary lines</h5>
-          <div class="legend-item"><span class="legend-swatch line" style="background:#4d4d4d;"></span><span>SSURGO units</span></div>
-          <div class="legend-item"><span class="legend-swatch line" style="background:#1f2937;"></span><span>Site border</span></div>
-        </div>
-      `);
-    }
-
-    if (state.pedonsVisible) {
-      sections.push(`
-        <div class="legend-section">
-          <h5>Pedon points</h5>
-          <div class="legend-item"><span class="legend-swatch circle" style="background:#111827;"></span><span>Sample points</span></div>
-        </div>
-      `);
-    }
-
-    box.innerHTML = sections.join('');
-    const note = state.manifest ? state.manifest.unit_note || '' : '';
-    document.getElementById('unitNote').textContent = note;
+    // unit note only matters while a chemistry surface is showing
+    const r = state.manifest && state.activeRaster
+      ? state.manifest.rasters.find((layer) => layer.id === state.activeRaster) : null;
+    // only the converted analytes, not pH or LBC (both are group "Chemistry"
+    // but neither is converted)
+    document.getElementById('unitNote').textContent =
+      (r && r.unit === 'lbs/ac' && state.manifest) ? (state.manifest.unit_note || '') : '';
   }
 
   function selectSeries(series) {
-    state.activeSeries = (state.activeSeries === series) ? null : series;
+    state.activeSeries = (series === null || state.activeSeries === series) ? null : series;
+    // restyle the markers themselves, not just the legend rows
+    pedonsLayer.getLayers().forEach((layer) => {
+      if (layer._entry && layer.setStyle) layer.setStyle(createMarkerStyle(layer._entry));
+    });
     updateSeriesHighlight();
     renderLegendSections();
   }
@@ -594,13 +756,16 @@ permalink: /perry-soil-map/
     pedonsLayer.clearLayers();
     markerEntries = [];
     data.forEach((row) => {
-      const pointId = row['label'] || row['Point'] || row['point'] || row['Sample'] || '';
+      // FIX: perry_FP_samples_80.csv has columns "Point ID", "Series", "x", "y".
+      // The previous lookups (label/Point/Sample, Latitude/Longitude) matched
+      // nothing, every row bailed out at the !lat check, and zero markers drew.
+      const pointId = row['Point ID'] || row['PointID'] || row['Point'] || row['label'] || '';
       const cleanId = String(pointId).trim();
       if (!cleanId || excluded.includes(cleanId)) return;
 
-      const lat = Number(row.Latitude || row.latitude || row.lat);
-      const lng = Number(row.Longitude || row.longitude || row.lng);
-      if (!lat || !lng) return;
+      const lat = Number(row.y != null && row.y !== '' ? row.y : (row.Latitude || row.latitude || row.lat));
+      const lng = Number(row.x != null && row.x !== '' ? row.x : (row.Longitude || row.longitude || row.lng));
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
       const series = seriesByPoint[cleanId] || seriesByPoint[cleanId.replace(/^0+/, '')] || 'Unknown';
       const entry = {
@@ -619,20 +784,11 @@ permalink: /perry-soil-map/
 
       markerEntries.push(entry);
       const marker = L.circleMarker([lat, lng], createMarkerStyle(entry));
+      marker._entry = entry;           // so selectSeries() can restyle it later
       marker.bindPopup(`<strong>${esc(cleanId)}</strong><br>${seriesHTML(series)}`);
       marker.on('click', () => setInfoPanel(entry));
       marker.addTo(pedonsLayer);
     });
-
-    if (state.activeSeries) {
-      markerEntries.forEach((entry) => {
-        const marker = pedonsLayer.getLayers().find((layer) => layer.options && layer.getLatLng && layer.getLatLng().lat === entry.lat && layer.getLatLng().lng === entry.lng);
-        if (marker) {
-          const style = createMarkerStyle(entry);
-          marker.setStyle(style);
-        }
-      });
-    }
 
     renderLegendSections();
     if (!state.activeSeries) setInfoPanel(markerEntries[0] || null);
@@ -647,63 +803,79 @@ permalink: /perry-soil-map/
     const controls = document.getElementById('layerControls');
     controls.innerHTML = '';
 
+    // ------------------------------------------------------------------
+    // Surfaces are RADIO, not checkbox. Previously all 11 overlays were
+    // added to the map at once and every box was checked, so the surfaces
+    // stacked on top of each other and the legend described whichever one
+    // happened to be last in the manifest (clay).
+    // ------------------------------------------------------------------
+    const surfaceWrap = document.createElement('div');
+    surfaceWrap.className = 'control-row';
+    surfaceWrap.innerHTML = '<strong style="font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;">Prediction surface</strong>';
+    controls.appendChild(surfaceWrap);
+
+    function showRaster(id) {
+      Object.keys(rasterLayers).forEach((key) => rasterLayers[key].layer.remove());
+      state.activeRaster = id;
+      if (id && rasterLayers[id]) {
+        rasterLayers[id].layer.setOpacity(state.rasterOpacity);
+        rasterLayers[id].layer.addTo(map);
+      }
+      renderLegendSections();
+    }
+
+    // "None" first, then one radio per surface, grouped
+    const noneRow = document.createElement('div');
+    noneRow.className = 'control-row';
+    noneRow.innerHTML = '<label><input type="radio" name="surface" value="" checked /> <span>None</span></label>';
+    noneRow.querySelector('input').addEventListener('change', () => showRaster(null));
+    controls.appendChild(noneRow);
+
+    let lastGroup = null;
     allLayers.forEach((r) => {
+      const bounds = [[r.bounds.south, r.bounds.west], [r.bounds.north, r.bounds.east]];
+      const overlay = L.imageOverlay(base + r.png, bounds, {
+        pane: 'soilRaster', opacity: state.rasterOpacity, interactive: false, className: 'soil-raster'
+      });
+      rasterLayers[r.id] = { layer: overlay, title: r.title, group: r.group };
+      // NOT added to the map here -- nothing shows until a radio is picked
+
+      if (r.group && r.group !== lastGroup) {
+        const h = document.createElement('div');
+        h.className = 'control-row';
+        h.innerHTML = `<span style="font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:#6b7280;">${esc(r.group)}</span>`;
+        controls.appendChild(h);
+        lastGroup = r.group;
+      }
+
       const row = document.createElement('div');
       row.className = 'control-row';
-      row.innerHTML = `
-        <label>
-          <input type="checkbox" data-layer-id="${r.id}" checked />
-          <span>${esc(r.title)}</span>
-        </label>
-        <input type="range" min="0" max="1" step="0.05" value="0.8" data-opacity-id="${r.id}" aria-label="${esc(r.title)} opacity" />
-      `;
-
-      const checkbox = row.querySelector('input[type="checkbox"]');
-      const slider = row.querySelector('input[type="range"]');
-      const bounds = [[r.bounds.south, r.bounds.west], [r.bounds.north, r.bounds.east]];
-      const overlay = L.imageOverlay(base + r.png, bounds, { pane: 'soilRaster', opacity: 0.8, interactive: false });
-      rasterLayers[r.id] = { layer: overlay, title: r.title, opacity: 0.8 };
-      overlay.addTo(map);
-      state.visibleRasterIds.add(r.id);
-      state.activeRaster = r.id;
-
-      checkbox.addEventListener('change', () => {
-        const visible = checkbox.checked;
-        if (visible) {
-          overlay.addTo(map);
-          state.visibleRasterIds.add(r.id);
-          state.activeRaster = r.id;
-        } else {
-          overlay.remove();
-          state.visibleRasterIds.delete(r.id);
-          if (state.activeRaster === r.id) {
-            const next = Array.from(state.visibleRasterIds)[0] || null;
-            state.activeRaster = next;
-          }
-        }
-        renderLegendSections();
-      });
-
-      slider.addEventListener('input', () => {
-        const value = Number(slider.value);
-        overlay.setOpacity(value);
-        rasterLayers[r.id].opacity = value;
-        if (checkbox.checked) {
-          state.activeRaster = r.id;
-        }
-        renderLegendSections();
-      });
-
+      row.innerHTML = `<label><input type="radio" name="surface" value="${r.id}" /> <span>${esc(r.title)}</span></label>`;
+      row.querySelector('input').addEventListener('change', () => showRaster(r.id));
       controls.appendChild(row);
     });
 
+    // one shared opacity slider, applied to whichever surface is active
+    const opRow = document.createElement('div');
+    opRow.className = 'control-row';
+    opRow.innerHTML = '<label style="flex:1;">Surface opacity <input type="range" min="0" max="1" step="0.05" value="0.8" id="opacitySlider" aria-label="Surface opacity" /></label>';
+    opRow.querySelector('input').addEventListener('input', (event) => {
+      state.rasterOpacity = Number(event.target.value);
+      if (state.activeRaster && rasterLayers[state.activeRaster]) {
+        rasterLayers[state.activeRaster].layer.setOpacity(state.rasterOpacity);
+      }
+    });
+    controls.appendChild(opRow);
+
+    // FIX: these toggled only the legend, never the actual Leaflet layers.
     const seriesToggle = document.createElement('div');
     seriesToggle.className = 'control-row';
     seriesToggle.innerHTML = `
-      <label><input type="checkbox" id="seriesToggle" checked /> <span>Mapped soil series</span></label>
+      <label><input type="checkbox" id="seriesToggle" /> <span>Mapped soil series</span></label>
     `;
     seriesToggle.querySelector('input').addEventListener('change', (event) => {
       state.soilSeriesVisible = event.target.checked;
+      if (event.target.checked) soilSeriesLayer.addTo(map); else soilSeriesLayer.remove();
       renderLegendSections();
     });
     controls.appendChild(seriesToggle);
@@ -711,10 +883,11 @@ permalink: /perry-soil-map/
     const matchToggle = document.createElement('div');
     matchToggle.className = 'control-row';
     matchToggle.innerHTML = `
-      <label><input type="checkbox" id="matchToggle" checked /> <span>SSURGO agreement</span></label>
+      <label><input type="checkbox" id="matchToggle" /> <span>SSURGO agreement</span></label>
     `;
     matchToggle.querySelector('input').addEventListener('change', (event) => {
       state.matchVisible = event.target.checked;
+      if (event.target.checked) matchLayer.addTo(map); else matchLayer.remove();
       renderLegendSections();
     });
     controls.appendChild(matchToggle);
@@ -726,6 +899,8 @@ permalink: /perry-soil-map/
     `;
     boundaryToggle.querySelector('input').addEventListener('change', (event) => {
       state.boundaryVisible = event.target.checked;
+      if (event.target.checked) { boundaryLayer.addTo(map); borderLayer.addTo(map); }
+      else { boundaryLayer.remove(); borderLayer.remove(); }
       renderLegendSections();
     });
     controls.appendChild(boundaryToggle);
@@ -737,24 +912,39 @@ permalink: /perry-soil-map/
     `;
     pedonToggle.querySelector('input').addEventListener('change', (event) => {
       state.pedonsVisible = event.target.checked;
-      pedonsLayer.eachLayer((layer) => layer.setStyle ? layer.setStyle({ opacity: event.target.checked ? 1 : 0, fillOpacity: event.target.checked ? 0.85 : 0 }) : null);
-      pedonsLayer.getLayers().forEach((layer) => {
-        if (layer.setStyle) layer.setStyle({ opacity: event.target.checked ? 1 : 0, fillOpacity: event.target.checked ? 0.85 : 0 });
-      });
+      if (event.target.checked) pedonsLayer.addTo(map); else pedonsLayer.remove();
       renderLegendSections();
     });
     controls.appendChild(pedonToggle);
+
+    // Vectors off by default except the boundaries -- add/remove on toggle.
+    soilSeriesLayer.remove();
+    matchLayer.remove();
 
     fetch(base + 'maplayers/soil_series.geojson')
       .then((response) => response.json())
       .then((geojson) => {
         soilSeriesLayer.addData(geojson);
+        const counts = {};
+        geojson.features.forEach((f) => {
+          const k = (f.properties && f.properties.series) || 'Unknown';
+          counts[k] = (counts[k] || 0) + 1;
+        });
+        state.seriesPolyCounts = counts;
+        renderLegendSections();
       });
 
     fetch(base + 'maplayers/ssurgo_matchup.geojson')
       .then((response) => response.json())
       .then((geojson) => {
         matchLayer.addData(geojson);
+        const counts = {};
+        geojson.features.forEach((f) => {
+          const k = (f.properties && f.properties.match) || 'Unknown';
+          counts[k] = (counts[k] || 0) + 1;
+        });
+        state.matchCounts = counts;
+        renderLegendSections();
       });
 
     fetch(base + 'maplayers/ssurgo_units.geojson')
@@ -767,6 +957,8 @@ permalink: /perry-soil-map/
       .then((response) => response.json())
       .then((geojson) => {
         borderLayer.addData(geojson);
+        // frame the site instead of sitting at a hardcoded zoom 14
+        try { map.fitBounds(borderLayer.getBounds(), { padding: [24, 24] }); } catch (e) {}
       });
 
     Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}', {
