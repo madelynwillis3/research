@@ -1,0 +1,269 @@
+{
+  "generated": "2026-09-21 17:04:16",
+  "crs_note": "Rasters reprojected to EPSG:3857; bounds given in EPSG:4326.",
+  "unit_note": "Ca, K, Mg, Mn, P, Zn converted from Mehlich-1 ppm to lbs/ac (x2).",
+  "rasters": [
+    {
+      "id": "ca",
+      "title": "Calcium (Ca)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/ca.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [713.78, 724.59, 739.55, 746.75, 759.32, 779.67, 813.29],
+      "colors": ["#FFFFCC", "#C7E9B4", "#7FCDBB", "#41B6C4", "#2C7FB8", "#253494"],
+      "stats": {
+        "min": 713.78,
+        "max": 813.29,
+        "mean": 751.86
+      }
+    },
+    {
+      "id": "ph",
+      "title": "Soil pH",
+      "unit": "",
+      "group": "Chemistry",
+      "png": "maplayers/ph.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [5.72, 5.9, 5.99, 6.07, 6.13, 6.27, 6.68],
+      "colors": ["#D73027", "#FC8D59", "#FEE090", "#E0F3F8", "#91BFDB", "#4575B4"],
+      "stats": {
+        "min": 5.72,
+        "max": 6.68,
+        "mean": 6.08
+      }
+    },
+    {
+      "id": "lbc",
+      "title": "Lime Buffer Capacity",
+      "unit": "",
+      "group": "Chemistry",
+      "png": "maplayers/lbc.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [146.88, 164.46, 171.6, 176.16, 179.63, 189.56, 220.47],
+      "colors": ["#F6EFF7", "#D0D1E6", "#A6BDDB", "#67A9CF", "#1C9099", "#016C59"],
+      "stats": {
+        "min": 146.88,
+        "max": 220.47,
+        "mean": 177.12
+      }
+    },
+    {
+      "id": "k",
+      "title": "Potassium (K)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/k.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [71.08, 81.6, 94.02, 105.38, 114.29, 126.77, 170.5],
+      "colors": ["#FFFFCC", "#C7E9B4", "#7FCDBB", "#41B6C4", "#2C7FB8", "#253494"],
+      "stats": {
+        "min": 71.08,
+        "max": 170.5,
+        "mean": 105.84
+      }
+    },
+    {
+      "id": "mg",
+      "title": "Magnesium (Mg)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/mg.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [79.06, 93.26, 97.72, 102.98, 109.62, 118.05, 133.11],
+      "colors": ["#FFFFCC", "#C7E9B4", "#7FCDBB", "#41B6C4", "#2C7FB8", "#253494"],
+      "stats": {
+        "min": 79.06,
+        "max": 133.11,
+        "mean": 104.88
+      }
+    },
+    {
+      "id": "mn",
+      "title": "Manganese (Mn)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/mn.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [21.29, 24.71, 26.59, 28.21, 29.97, 33.72, 45.1],
+      "colors": ["#FFFFD4", "#FEE391", "#FEC44F", "#FE9929", "#D95F0E", "#993404"],
+      "stats": {
+        "min": 21.29,
+        "max": 45.1,
+        "mean": 28.98
+      }
+    },
+    {
+      "id": "p",
+      "title": "Phosphorus (P)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/p.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [13.14, 23.57, 27.84, 31.94, 37.2, 44.15, 218.88],
+      "colors": ["#FFFFCC", "#D9F0A3", "#ADDD8E", "#78C679", "#31A354", "#006837"],
+      "stats": {
+        "min": 13.14,
+        "max": 218.88,
+        "mean": 34.84
+      }
+    },
+    {
+      "id": "zn",
+      "title": "Zinc (Zn)",
+      "unit": "lbs/ac",
+      "group": "Chemistry",
+      "png": "maplayers/zn.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [2.64, 3.02, 3.38, 3.64, 3.89, 4.34, 16.73],
+      "colors": ["#EDF8FB", "#BFD3E6", "#9EBCDA", "#8C96C6", "#8856A7", "#810F7C"],
+      "stats": {
+        "min": 2.64,
+        "max": 16.73,
+        "mean": 4.05
+      }
+    },
+    {
+      "id": "sand",
+      "title": "Sand",
+      "unit": "%",
+      "group": "Texture",
+      "png": "maplayers/sand.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [65.29, 77.15, 82.26, 83.4, 84.21, 85.35, 87.5],
+      "colors": ["#FFFFD4", "#FEE391", "#FEC44F", "#FE9929", "#D95F0E", "#993404"],
+      "stats": {
+        "min": 65.29,
+        "max": 87.5,
+        "mean": 81.74
+      }
+    },
+    {
+      "id": "silt",
+      "title": "Silt",
+      "unit": "%",
+      "group": "Texture",
+      "png": "maplayers/silt.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [7.52, 8.73, 9.42, 9.93, 10.34, 11.14, 18.48],
+      "colors": ["#EDF8FB", "#CCECE6", "#99D8C9", "#66C2A4", "#2CA25F", "#006D2C"],
+      "stats": {
+        "min": 7.52,
+        "max": 18.48,
+        "mean": 10.09
+      }
+    },
+    {
+      "id": "clay",
+      "title": "Clay",
+      "unit": "%",
+      "group": "Texture",
+      "png": "maplayers/clay.png",
+      "bounds": {
+        "south": 32.42989,
+        "west": -83.737225,
+        "north": 32.439314,
+        "east": -83.72107
+      },
+      "breaks": [4.89, 5.6, 6.15, 6.45, 7.66, 11.61, 24.25],
+      "colors": ["#FEF0D9", "#FDD49E", "#FDBB84", "#FC8D59", "#E34A33", "#B30000"],
+      "stats": {
+        "min": 4.89,
+        "max": 24.25,
+        "mean": 8.17
+      }
+    }
+  ],
+  "vectors": {
+    "soil_series": {
+      "file": "maplayers/soil_series.geojson",
+      "title": "Mapped soil series",
+      "palette": {
+        "Benevolence": "#EEDABA",
+        "Blanton": "#B68870",
+        "Dothan": "#E6E600",
+        "Faceville": "#FF5500",
+        "Greenville": "#E64C00",
+        "Johns": "#ED7932",
+        "Lakeland": "#FFEBAF",
+        "Leefield": "#F5B05C",
+        "Lucy": "#F57A7A",
+        "Marvyn": "#BA7049",
+        "Norfolk": "#FFAA00",
+        "Orangeburg": "#E69800",
+        "Red Bay": "#A83800",
+        "Thursa": "#F79965",
+        "Troup": "#A87000",
+        "Wagram": "#E8D08A",
+        "Disturbed": "#886868",
+        "HTM": "#D9D9D9"
+      }
+    },
+    "ssurgo_matchup": {
+      "file": "maplayers/ssurgo_matchup.geojson",
+      "title": "Field series vs SSURGO",
+      "palette": {
+        "Agree": "#1B7837",
+        "Disagree": "#E8710A"
+      }
+    },
+    "ssurgo_units": {
+      "file": "maplayers/ssurgo_units.geojson",
+      "title": "SSURGO map unit boundaries"
+    },
+    "site_border": {
+      "file": "maplayers/site_border.geojson",
+      "title": "Site border"
+    }
+  }
+}
