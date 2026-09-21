@@ -11,47 +11,64 @@
   <meta name="theme-color" content="#157878">
   <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
   <link rel="icon" type="image/jpeg" href="{{ '/images/green-plant-sprout-icon-in-soil-free-vector.jpg' | relative_url }}">
+  <style>
+    /* The Perry page keeps its controls below the map so they never cover data. */
+    #map { height: 760px !important; min-height: 560px; }
+    #mapColumn { min-width: min(100%, 760px) !important; }
+    #layerControls { margin-top: 12px; padding: 12px 14px; border: 1px solid rgba(0,0,0,.15); border-radius: 12px; background: #fff; }
+    #layerControls fieldset { border: 0; margin: 0 0 10px; padding: 0; }
+    #layerControls legend, #layerControls strong { font-weight: 700; }
+    #layerControls label { display: inline-block; margin: 4px 14px 4px 0; }
+    #layerControls .control-heading { display: block; margin: 8px 0 2px; font-weight: 700; }
+    #layerControls button { border: 1px solid rgba(0,0,0,.25); border-radius: 7px; background: #f7f7f7; padding: 6px 10px; cursor: pointer; }
+    #layerControls button:hover { background: #ececec; }
+    #opacityControl { vertical-align: middle; width: 150px; }
+    .raster-legend { display: flex; height: 22px; margin: 8px 0 2px; }
+    .raster-legend span { flex: 1; }
+    .raster-labels { display:flex; justify-content:space-between; font-size:.75rem; gap:4px; }
+    .legend-note { font-size:.8rem; opacity:.8; }
+    .soil-raster img { image-rendering: pixelated; }
+    @media (max-width:700px) { #map { height: 620px !important; } #layerControls label { display:block; } }
+  </style>
 </head>
 <body>
   <main id="content" class="main-content" role="main">{{ content }}</main>
   <script>
-  /* Recovery initializer: the page script is kept self-contained, but this also
-     makes the map recover if a browser rejects a future optional interaction. */
-  window.addEventListener('load', function () {
-    if (!window.L || document.querySelector('.leaflet-container')) return;
-    var map = L.map('map').setView([32.43, -83.73], 14);
-    map.createPane('soilRaster').style.zIndex = 200;
-    map.createPane('soilVector').style.zIndex = 400;
-    map.createPane('pedons').style.zIndex = 600;
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' }).addTo(map);
-    var base = '{{ "/assets/" | relative_url }}';
-    fetch(base + 'maplayers/manifest.json').then(function (r) { return r.json(); }).then(function (m) {
-      var surfaces = {}, active = null;
-      m.rasters.forEach(function (r) {
-        var b = r.bounds;
-        surfaces[r.id] = L.imageOverlay(base + r.png, [[b.south, b.west], [b.north, b.east]], { opacity: .75, pane: 'soilRaster', className: 'soil-raster' });
-      });
-      var control = L.control.layers(null, {}, { collapsed: false }).addTo(map);
-      var none = L.layerGroup();
-      control.addOverlay(none, 'None');
-      m.rasters.forEach(function (r) { control.addOverlay(surfaces[r.id], r.title + (r.group ? ' (' + r.group + ')' : '')); });
-      Object.keys(m.vectors).forEach(function (key) {
-        var v = m.vectors[key];
-        fetch(base + v.file).then(function (r) { return r.json(); }).then(function (geo) {
-          var layer = L.geoJSON(geo, { pane: 'soilVector', style: function (f) {
-            var p = f.properties || {};
-            if (key === 'soil_series') return { color: '#333', weight: 1, fillColor: p.fill || '#bbb', fillOpacity: .75 };
-            if (key === 'ssurgo_matchup') return { weight: 0, fillColor: p.fill || '#bbb', fillOpacity: .7 };
-            if (key === 'ssurgo_units') return { color: '#777', weight: 1, dashArray: '5,4', fill: false };
-            return { color: '#000', weight: 2, fill: false };
-          }, onEachFeature: function (f, l) { var p = f.properties || {}; if (key === 'soil_series') l.bindPopup('<b>Series:</b> ' + (p.series || '') + '<br><b>Musym:</b> ' + (p.musym || '') + '<br><b>Muname:</b> ' + (p.muname || '')); else if (key === 'ssurgo_matchup') l.bindPopup('<b>Match:</b> ' + (p.match || '') + '<br><b>Field series:</b> ' + (p.field_series || '') + '<br><b>SSURGO series:</b> ' + (p.ssurgo_series || '') + '<br><b>SSURGO map unit:</b> ' + (p.ssurgo_unit || '') + '<br><b>Drainage:</b> ' + (p.drainage || '') + '<br><b>Slope:</b> ' + (p.slope || '')); } });
-          control.addOverlay(layer, v.title);
-          if (key === 'site_border') layer.addTo(map);
-        });
-      });
-      fetch('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}').then(function (r) { return r.text(); }).then(function (text) { if (!window.Papa) return; var points = L.layerGroup([], { pane: 'pedons' }); Papa.parse(text, { header: true, complete: function (result) { result.data.forEach(function (row) { var lat = parseFloat(row.y), lng = parseFloat(row.x), id = (row['Point ID'] || '').trim(); if (!id || isNaN(lat) || isNaN(lng)) return; L.circleMarker([lat, lng], { radius: 6, color: '#000', weight: 1.5, fillColor: '#808080', fillOpacity: .85, pane: 'pedons' }).bindPopup('<b>Point ' + id + '</b>').addTo(points); }); points.addTo(map); control.addOverlay(points, 'Pedon points'); } }); });
-    });
-  });
+  (function () {
+    'use strict';
+    function start() {
+      if (!window.L || document.querySelector('.leaflet-container')) return;
+      var mapEl = document.getElementById('map');
+      if (!mapEl) return;
+      var map = L.map(mapEl).setView([32.43, -83.73], 14);
+      map.createPane('soilRaster').style.zIndex = 200;
+      map.createPane('soilVector').style.zIndex = 400;
+      map.createPane('pedons').style.zIndex = 600;
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' }).addTo(map);
+      var base = '{{ "/assets/" | relative_url }}';
+      var imgBase = '{{ "/assets/images/pedon_images/" | relative_url }}';
+      var fieldBase = 'https://github.com/madelynwillis3/research/releases/download/coastalplain-images-v1.0/perry_GA_point_';
+      var exclude = ['39','50','51','58','59','60','65','74'];
+      var seriesByPoint = {"P2":"Thursa","P3":"Faceville","P4":"Faceville","1":"Orangeburg","2":"Faceville","3":"Faceville","4":"Faceville","5":"Wagram","6":"Norfolk","7":"Bonneau","8":"Wagram","9":"Orangeburg","10":"Esto","11":"Norfolk","12":"Orangeburg","13":"Norfolk","14":"Orangeburg","15":"Dothan","16":"Lakeland","17":"Orangeburg","18":"Orangeburg","19":"Faceville","20":"Marvyn","21":"Norfolk","22":"Orangeburg","23":"Norfolk","24":"Norfolk","25":"Lakeland","26":"Benevolence","27":"Greenville","28":"Greenville","29":"Red Bay","30":"Faceville","31":"Faceville","32":"Norfolk","33":"Norfolk","34":"Johns","35":"Disturbed","36":"Orangeburg","37":"Faceville","38":"Faceville","40":"Greenville","41":"Orangeburg","42":"Dothan","43":"Norfolk","44":"Blanton","45":"Greenville","46":"Greenville","47":"Faceville","48":"Greenville","49":"Disturbed","52":"Leefield","53":"Orangeburg","54":"Faceville","55":"Faceville","56":"Faceville","57":"Greenville","61":"Greenville","62":"Greenville","63":"Lucy","64":"Greenville","66":"Faceville","67":"Faceville","68":"Greenville","69":"Faceville","70":"Faceville","71":"Greenville","72":"Orangeburg","73":"Disturbed","75":"Faceville","76":"Orangeburg","77":"Orangeburg","78":"Lucy","79":"Troup","80":"Troup"};
+      var seriesColors = {Faceville:'#d73027',Orangeburg:'#c94c4c',Lucy:'#e76f51',Troup:'#f4a6a6',Greenville:'#8b0000',Leefield:'#d8c3a5',Blanton:'#8a7f73',Norfolk:'#f28c28',Dothan:'#d4a017',Johns:'#c2a878','Red Bay':'#5c0000',Benevolence:'#fa8072',Lakeland:'#d2a679',Wagram:'#d2a679',Bonneau:'#d3d3d3',Esto:'#c9a44b',Marvyn:'#a44a3f',Disturbed:'#808080'};
+      var seriesLinks = Object.fromEntries(Object.keys(seriesColors).filter(function(s){return s !== 'Disturbed';}).map(function(s){return [s,'https://casoilresource.lawr.ucdavis.edu/sde/?series='+encodeURIComponent(s.toUpperCase())+'#osd'];}));
+      var esc = function(v){return String(v == null ? '' : v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+      var panel = document.getElementById('infoPanel'), legendContent = document.getElementById('legendContent'), legendTitle = document.getElementById('legendTitle'), unitNote = document.getElementById('unitNote');
+      var pedons = L.layerGroup([], {pane:'pedons'}), markerEntries = [], activeSeries = null, currentImages = [], currentImage = 0;
+      function linkSeries(s) { return seriesLinks[s] ? '<a class="series-link" target="_blank" rel="noopener noreferrer" href="'+seriesLinks[s]+'">'+esc(s)+'</a>' : esc(s); }
+      function showImage(i) { currentImage = (i + currentImages.length) % currentImages.length; var img = document.getElementById('pedonImage'); if (img) { img.src=currentImages[currentImage]; img.onclick=function(){openModal(currentImages,currentImage);}; } var cap=document.getElementById('pedonImageCaption'); if(cap) cap.textContent='Image '+(currentImage+1)+' of '+currentImages.length; }
+      function setPanel(id, lat, lng, series) { currentImages=[imgBase+id+'.jpg',fieldBase+id+'.jpg']; panel.innerHTML='<h3>'+linkSeries(series)+'</h3><p class="muted">Point '+esc(id)+' | Lat: '+lat.toFixed(6)+' | Lon: '+lng.toFixed(6)+'</p><div class="image-carousel"><img id="pedonImage" src="'+currentImages[0]+'" alt="Profile image for '+esc(series)+' (Point '+esc(id)+')"><button type="button" onclick="window.perryPrevImage()">‹</button><button type="button" onclick="window.perryNextImage()">›</button><p id="pedonImageCaption" class="muted">Image 1 of 2</p></div><p class="muted">Click an image to enlarge. Use the arrows to switch images.</p>'; currentImage=0; document.getElementById('pedonImage').onclick=function(){openModal(currentImages,0);}; }
+      window.perryPrevImage=function(){showImage(currentImage-1);}; window.perryNextImage=function(){showImage(currentImage+1);};
+      function openModal(images, index) { var modal=document.getElementById('imgModal'); if(!modal){modal=document.createElement('div');modal.id='imgModal';modal.className='modal';modal.innerHTML='<div class="modal-card"><div class="close-note">Click outside or press ESC to close</div><img id="perryModalImage"><p id="perryModalCaption"></p></div>';document.body.appendChild(modal);modal.onclick=function(e){if(e.target===modal)modal.style.display='none';};} modal.style.display='block'; modal.querySelector('#perryModalImage').src=images[index]; modal.querySelector('#perryModalCaption').textContent='Image '+(index+1)+' of '+images.length; document.body.style.overflow='hidden'; }
+      window.addEventListener('keydown',function(e){var m=document.getElementById('imgModal');if(m&&m.style.display==='block'&&e.key==='Escape'){m.style.display='none';document.body.style.overflow='';}});
+      function renderLegend() { var counts={}; markerEntries.forEach(function(e){counts[e.series]=(counts[e.series]||0)+1;}); legendContent.innerHTML=''; Object.keys(counts).sort(function(a,b){return counts[b]-counts[a]||a.localeCompare(b);}).forEach(function(s){var b=document.createElement('button');b.type='button';b.className='legend-item';b.dataset.series=s;b.innerHTML='<span class="legend-swatch" style="background:'+ (seriesColors[s]||'#808080') +'"></span>'+esc(s)+' ('+counts[s]+')';b.onclick=function(){activeSeries=activeSeries===s?null:s;markerEntries.forEach(function(e){e.marker.setStyle(e.series===activeSeries?{fillOpacity:1,opacity:1,radius:8,weight:2.5}:{fillOpacity:activeSeries?.15:.85,opacity:activeSeries?.25:1,radius:activeSeries?5:6,weight:1.5});});document.querySelectorAll('.legend-item').forEach(function(x){x.classList.toggle('active',x.dataset.series===activeSeries);x.classList.toggle('dimmed',!!activeSeries&&x.dataset.series!==activeSeries);});};legendContent.appendChild(b);}); }
+      function rasterLegend(r) { legendTitle.textContent=r.title+(r.unit?' ('+r.unit+')':''); legendContent.innerHTML='<div class="raster-legend">'+r.colors.map(function(c){return '<span style="background:'+c+'"></span>';}).join('')+'</div><div class="raster-labels">'+r.breaks.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div>'; }
+      function addControls(man, rasters, vectors) { var old=document.getElementById('layerControls');if(old)old.remove();var box=document.createElement('div');box.id='layerControls';box.innerHTML='<strong>Map layers</strong><button id="clearMap" type="button" style="float:right">Clear all</button><span class="control-heading">Continuous surfaces</span>';document.getElementById('mapColumn').insertBefore(box,document.getElementById('legend'));var activeRaster=null;function radio(r){var label=document.createElement('label');label.innerHTML='<input type="radio" name="surface" value="'+r.id+'"> '+esc(r.title)+' <small>('+esc(r.group)+')</small>';label.firstChild.onchange=function(){if(activeRaster)map.removeLayer(activeRaster);activeRaster=rasters[r.id];activeRaster.addTo(map);activeRaster.setOpacity((document.getElementById('opacityControl').value||75)/100);rasterLegend(r);};box.appendChild(label);}man.rasters.forEach(radio);var op=document.createElement('div');op.innerHTML='<span class="control-heading">Surface opacity</span><input id="opacityControl" type="range" min="0" max="100" value="75"><output>75%</output>';box.appendChild(op);op.querySelector('input').oninput=function(){op.querySelector('output').value=this.value+'%';if(activeRaster)activeRaster.setOpacity(this.value/100);};box.insertAdjacentHTML('beforeend','<span class="control-heading">Vector overlays</span>');Object.keys(vectors).forEach(function(k){var label=document.createElement('label');label.innerHTML='<input type="checkbox" data-layer="'+k+'"> '+esc(man.vectors[k].title);label.firstChild.onchange=function(){var l=vectors[k];if(this.checked)l.addTo(map);else map.removeLayer(l);};if(k==='site_border'){label.firstChild.checked=true;vectors[k].addTo(map);}box.appendChild(label);});var p=document.createElement('label');p.innerHTML='<input type="checkbox" checked> Pedon points';p.firstChild.onchange=function(){if(this.checked)pedons.addTo(map);else map.removeLayer(pedons);};box.appendChild(p);document.getElementById('clearMap').onclick=function(){if(activeRaster){map.removeLayer(activeRaster);activeRaster=null;}Object.keys(vectors).forEach(function(k){map.removeLayer(vectors[k]);});map.removeLayer(pedons);box.querySelectorAll('input[type=checkbox]').forEach(function(x){x.checked=false;});legendTitle.textContent='Map legend';legendContent.innerHTML='';}; }
+      function load() { fetch(base+'maplayers/manifest.json').then(function(r){return r.json();}).then(function(man){unitNote.textContent=man.unit_note||'';var rasters={},vectors={};man.rasters.forEach(function(r){var b=r.bounds;rasters[r.id]=L.imageOverlay(base+r.png,[[b.south,b.west],[b.north,b.east]],{opacity:.75,interactive:false,className:'soil-raster',pane:'soilRaster'});});Promise.all(Object.keys(man.vectors).map(function(k){var v=man.vectors[k];return fetch(base+v.file).then(function(r){return r.json();}).then(function(g){vectors[k]=L.geoJSON(g,{pane:'soilVector',style:function(f){var p=f.properties||{};if(k==='soil_series')return{color:'#333',weight:1,fillColor:p.fill||'#bbb',fillOpacity:.75};if(k==='ssurgo_matchup')return{weight:0,fillColor:p.fill||'#bbb',fillOpacity:.7};if(k==='ssurgo_units')return{color:'#777',weight:1,dashArray:'5,4',fill:false};return{color:'#000',weight:2,fill:false};},onEachFeature:function(f,l){var p=f.properties||{};if(k==='soil_series')l.bindPopup('<b>Series:</b> '+esc(p.series)+'<br><b>Musym:</b> '+esc(p.musym)+'<br><b>Muname:</b> '+esc(p.muname));if(k==='ssurgo_matchup')l.bindPopup('<b>Match:</b> '+esc(p.match)+'<br><b>Field series:</b> '+esc(p.field_series)+'<br><b>SSURGO series:</b> '+esc(p.ssurgo_series)+'<br><b>SSURGO map unit:</b> '+esc(p.ssurgo_unit)+'<br><b>Drainage:</b> '+esc(p.drainage)+'<br><b>Slope:</b> '+esc(p.slope));}});});})).then(function(){addControls(man,rasters,vectors);Papa.parse('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}',{download:true,header:true,complete:function(result){result.data.forEach(function(row,i){var id=(row['Point ID']||'').trim(),lat=parseFloat(row.y),lng=parseFloat(row.x);if(!id||exclude.indexOf(id)>-1||isNaN(lat)||isNaN(lng))return;var s=seriesByPoint[id]||id,m=L.circleMarker([lat,lng],{radius:6,color:'#000',weight:1.5,fillColor:seriesColors[s]||'#808080',fillOpacity:0,opacity:0,pane:'pedons'});m.bindPopup('<b>'+linkSeries(s)+'</b><br>Point '+esc(id)+'<br><img class="popup-img" src="'+imgBase+id+'.jpg" alt="Profile image" style="width:160px">');m.on('click',function(){setPanel(id,lat,lng,s);m.openPopup();});markerEntries.push({marker:m,series:s});setTimeout(function(){m.addTo(pedons);m.setStyle({fillOpacity:.35,opacity:.5});setTimeout(function(){m.setStyle({fillOpacity:.6,opacity:.75});},60);setTimeout(function(){m.setStyle({fillOpacity:.85,opacity:1});},120);},1700+i*30);});pedons.addTo(map);renderLegend();}});});}).catch(function(e){console.error('Perry map failed to load',e);legendContent.textContent='Map layers could not be loaded.';}); }
+      load();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  }());
   </script>
 </body>
 </html>
