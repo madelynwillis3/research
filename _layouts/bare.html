@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+<head>
+  <meta charset="UTF-8">
+  {% seo %}
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/nav.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  <link rel="icon" type="image/jpeg" href="{{ '/images/green-plant-sprout-icon-in-soil-free-vector.jpg' | relative_url }}">
+</head>
+<body>
+  <header class="page-header" role="banner"><h1 class="project-name">Digital Soil Mapping in Agriculture</h1></header>
+  <main id="content" class="main-content" role="main">{{ content }}</main>
+</body>
+</html>
