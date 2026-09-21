@@ -14,5 +14,44 @@
 </head>
 <body>
   <main id="content" class="main-content" role="main">{{ content }}</main>
+  <script>
+  /* Recovery initializer: the page script is kept self-contained, but this also
+     makes the map recover if a browser rejects a future optional interaction. */
+  window.addEventListener('load', function () {
+    if (!window.L || document.querySelector('.leaflet-container')) return;
+    var map = L.map('map').setView([32.43, -83.73], 14);
+    map.createPane('soilRaster').style.zIndex = 200;
+    map.createPane('soilVector').style.zIndex = 400;
+    map.createPane('pedons').style.zIndex = 600;
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' }).addTo(map);
+    var base = '{{ "/assets/" | relative_url }}';
+    fetch(base + 'maplayers/manifest.json').then(function (r) { return r.json(); }).then(function (m) {
+      var surfaces = {}, active = null;
+      m.rasters.forEach(function (r) {
+        var b = r.bounds;
+        surfaces[r.id] = L.imageOverlay(base + r.png, [[b.south, b.west], [b.north, b.east]], { opacity: .75, pane: 'soilRaster', className: 'soil-raster' });
+      });
+      var control = L.control.layers(null, {}, { collapsed: false }).addTo(map);
+      var none = L.layerGroup();
+      control.addOverlay(none, 'None');
+      m.rasters.forEach(function (r) { control.addOverlay(surfaces[r.id], r.title + (r.group ? ' (' + r.group + ')' : '')); });
+      Object.keys(m.vectors).forEach(function (key) {
+        var v = m.vectors[key];
+        fetch(base + v.file).then(function (r) { return r.json(); }).then(function (geo) {
+          var layer = L.geoJSON(geo, { pane: 'soilVector', style: function (f) {
+            var p = f.properties || {};
+            if (key === 'soil_series') return { color: '#333', weight: 1, fillColor: p.fill || '#bbb', fillOpacity: .75 };
+            if (key === 'ssurgo_matchup') return { weight: 0, fillColor: p.fill || '#bbb', fillOpacity: .7 };
+            if (key === 'ssurgo_units') return { color: '#777', weight: 1, dashArray: '5,4', fill: false };
+            return { color: '#000', weight: 2, fill: false };
+          }, onEachFeature: function (f, l) { var p = f.properties || {}; if (key === 'soil_series') l.bindPopup('<b>Series:</b> ' + (p.series || '') + '<br><b>Musym:</b> ' + (p.musym || '') + '<br><b>Muname:</b> ' + (p.muname || '')); else if (key === 'ssurgo_matchup') l.bindPopup('<b>Match:</b> ' + (p.match || '') + '<br><b>Field series:</b> ' + (p.field_series || '') + '<br><b>SSURGO series:</b> ' + (p.ssurgo_series || '') + '<br><b>SSURGO map unit:</b> ' + (p.ssurgo_unit || '') + '<br><b>Drainage:</b> ' + (p.drainage || '') + '<br><b>Slope:</b> ' + (p.slope || '')); } });
+          control.addOverlay(layer, v.title);
+          if (key === 'site_border') layer.addTo(map);
+        });
+      });
+      fetch('{{ "/assets/data/perry_FP_samples_80.csv" | relative_url }}').then(function (r) { return r.text(); }).then(function (text) { if (!window.Papa) return; var points = L.layerGroup([], { pane: 'pedons' }); Papa.parse(text, { header: true, complete: function (result) { result.data.forEach(function (row) { var lat = parseFloat(row.y), lng = parseFloat(row.x), id = (row['Point ID'] || '').trim(); if (!id || isNaN(lat) || isNaN(lng)) return; L.circleMarker([lat, lng], { radius: 6, color: '#000', weight: 1.5, fillColor: '#808080', fillOpacity: .85, pane: 'pedons' }).bindPopup('<b>Point ' + id + '</b>').addTo(points); }); points.addTo(map); control.addOverlay(points, 'Pedon points'); } }); });
+    });
+  });
+  </script>
 </body>
 </html>
