@@ -17,17 +17,26 @@ permalink: /perry-soil-map/
     --shadow: 0 10px 22px rgba(17, 24, 39, 0.10);
   }
 
+  /* The bare layout inherits Cayman's narrow .main-content, which was forcing
+     the three columns to wrap (map ended up under the legend). Widen just this
+     page and lay it out with an explicit grid instead of flex-basis maths. */
+  .main-content,
+  main#content {
+    max-width: 1500px !important;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+
   #mapWrap {
-    display: flex;
-    flex-wrap: wrap;          /* FIX: infoPanel was being clipped off the right */
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr) 320px;  /* legend | map | pedon panel */
     gap: 18px;
-    align-items: flex-start;
+    align-items: start;
     margin: 1.2rem 0 2rem;
   }
 
   #legendColumn {
-    flex: 0 0 240px;
-    width: 240px;
+    min-width: 0;
   }
 
   #legend {
@@ -138,8 +147,7 @@ permalink: /perry-soil-map/
   }
 
   #mapColumn {
-    flex: 1 1 420px;
-    min-width: 0;             /* FIX: without this a flex item refuses to shrink */
+    min-width: 0;             /* lets the grid column actually shrink */
   }
 
   /* vertical class ramp for the active raster */
@@ -217,8 +225,9 @@ permalink: /perry-soil-map/
   }
 
   #infoPanel {
-    flex: 0 0 300px;
-    width: 300px;
+    min-width: 0;
+    position: sticky;
+    top: 12px;
     background: var(--panel-bg);
     border: 1px solid var(--panel-border);
     border-radius: 12px;
@@ -262,6 +271,17 @@ permalink: /perry-soil-map/
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 10px;
+  }
+
+  .popup-img {
+    display: block;
+    margin-top: 6px;
+    max-width: 220px;
+    max-height: 200px;
+    width: auto;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #f1f5f9;
   }
 
   .thumb {
@@ -334,17 +354,34 @@ permalink: /perry-soil-map/
     text-align: center;
   }
 
-  @media (max-width: 980px) {
+  /* legend sections pop in when their layer is switched on */
+  @keyframes legendPop {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .legend-section {
+    animation: legendPop 0.22s ease-out both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .legend-section { animation: none; }
+  }
+
+  @media (max-width: 1240px) {
     #mapWrap {
-      flex-direction: column;
+      grid-template-columns: 230px minmax(0, 1fr);   /* pedon panel drops below */
     }
-
-    #legendColumn,
     #infoPanel {
-      width: 100%;
-      flex-basis: auto;
+      grid-column: 1 / -1;
+      position: static;
     }
+  }
 
+  @media (max-width: 860px) {
+    #mapWrap {
+      grid-template-columns: 1fr;                    /* everything stacks */
+    }
     #legend {
       position: static;
     }
@@ -507,7 +544,8 @@ permalink: /perry-soil-map/
   const map = L.map('map', { scrollWheelZoom: true }).setView([32.43, -83.73], 14);
   map.createPane('soilRaster').style.zIndex = 200;
   map.createPane('soilVector').style.zIndex = 400;
-  map.createPane('pedons').style.zIndex = 600;
+  map.createPane('pedons').style.zIndex = 650;   // above every overlay
+  map.getPane('pedons').style.pointerEvents = 'auto';
 
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles © Esri'
@@ -742,7 +780,11 @@ permalink: /perry-soil-map/
   });
 
   function createMarkerStyle(entry) {
-    const baseStyle = { ...defaultMarkerStyle };
+    // pane MUST be set on the marker itself. L.layerGroup does not pass its
+    // pane down to children, so without this the circleMarkers were rendered
+    // in the default overlayPane alongside the polygons and disappeared
+    // underneath the soil series / SSURGO fills.
+    const baseStyle = { ...defaultMarkerStyle, pane: 'pedons' };
     if (state.activeSeries && entry.series !== state.activeSeries) {
       return { ...baseStyle, ...dimmedMarkerStyle };
     }
@@ -785,7 +827,16 @@ permalink: /perry-soil-map/
       markerEntries.push(entry);
       const marker = L.circleMarker([lat, lng], createMarkerStyle(entry));
       marker._entry = entry;           // so selectSeries() can restyle it later
-      marker.bindPopup(`<strong>${esc(cleanId)}</strong><br>${seriesHTML(series)}`);
+      // popup mirrors the original coastalplain map: series link, point id,
+      // and the profile photo, clickable to open the full gallery
+      marker.bindPopup(`
+        <b>${seriesHTML(series)}</b><br>
+        <span>Point ${esc(cleanId)}</span><br>
+        <img src="${entry.images[0]}" class="popup-img" loading="lazy"
+             alt="Profile image for ${esc(series)} (Point ${esc(cleanId)})"
+             onclick="openModal('${entry.images[0]}', '${esc(cleanId)}')"
+             onerror="this.style.display='none'">
+      `, { maxWidth: 260 });
       marker.on('click', () => setInfoPanel(entry));
       marker.addTo(pedonsLayer);
     });
